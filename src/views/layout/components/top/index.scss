@@ -1,0 +1,22 @@
+.page-top {
+  width: 100%;
+  height: vh(50);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .center-tit {
+    width: vw(540);
+    height: vh(50);
+    background: url('~@img/bg_name@2x.png') no-repeat center;
+    background-size: 100% 100%;
+  }
+  h2 {
+    text-align: center;
+    color: #ffffff;
+    font-size: vw(20);
+    margin: 0;
+    line-height: vh(48);
+    font-weight: 400;
+  }
+}

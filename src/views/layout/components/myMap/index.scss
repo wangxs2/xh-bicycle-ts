@@ -1,0 +1,180 @@
+.my-map {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  -moz-user-select: -moz-none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  #mapContainer {
+    width: 100%;
+    height: 100%;
+    // box-shadow: 0px 0px vh(20) vh(0.8) rgba(153, 204, 255, 0.2) inset;
+    // border-radius: vh(2);
+  }
+  .setting-btn {
+    position: absolute;
+    top: vh(10);
+    right: vw(10);
+    width: vw(80);
+    height: vw(23);
+    line-height: vw(23);
+    background: #fff;
+    box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.3);
+    border-radius: vh(2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: vw(10);
+    cursor: pointer;
+    img {
+      width: vw(16);
+      height: vw(10);
+      margin-right: vw(6);
+    }
+  }
+  .setting-content {
+    position: absolute;
+    top: vh(34);
+    right: vw(10);
+    width: vw(170);
+    // height: 41.7vh;
+    background: rgba(35, 36, 52, 0.9);
+    border: 1px solid rgba(153, 204, 255, 0.25);
+    padding: vw(15) vw(6);
+    border-radius: vh(2);
+    box-sizing: border-box;
+    .area-name {
+      display: flex;
+      align-items: center;
+      color: #20c0fe;
+      font-size: vw(10);
+      img {
+        margin-right: vw(4);
+        width: vw(10);
+        height: vw(10);
+      }
+    }
+    .enterprises {
+      margin-top: vh(14);
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      .enterprise-item {
+        display: flex;
+        align-items: center;
+        color: #fff;
+        font-size: vw(10);
+        cursor: pointer;
+        img {
+          margin-right: vw(4);
+          width: vw(10);
+          height: vw(10);
+        }
+      }
+    }
+    .setting-selects {
+      margin-top: vh(14);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      .selects-item {
+        display: flex;
+        align-items: center;
+        color: #fff;
+        font-size: vw(10);
+        margin-bottom: vh(14);
+        &:last-of-type {
+          margin: 0;
+        }
+        cursor: pointer;
+        img {
+          margin-right: vw(6);
+          width: vw(12);
+          height: vw(12);
+        }
+      }
+    }
+  }
+  .workOrder-details {
+    position: absolute;
+    z-index: 10;
+    right: vw(400);
+    top: vh(58);
+    width: vw(320);
+    height: vw(490);
+    background: #00478f;
+    border-top: 2px solid #00cafa;
+    border-bottom: 2px solid #00cafa;
+    padding: 0 vw(20);
+    box-sizing: border-box;
+    color: #fefefe;
+    .workOrder-details-close {
+      position: absolute;
+      right: vw(10);
+      top: vw(10);
+      width: vw(28);
+      height: vw(28);
+      text-align: center;
+      line-height: vw(28);
+      font-size: vw(16);
+      cursor: pointer;
+    }
+    .details-status {
+      width: 100%;
+      height: vw(46);
+      text-align: center;
+      line-height: vw(44);
+      font-size: vw(18);
+    }
+    .imgs {
+      width: 100%;
+      height: vw(235);
+      .img-item {
+        position: relative;
+        width: vw(282);
+        height: vw(235);
+        img {
+          width: 100%;
+          height: 100%;
+        }
+        .img-watermark {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          height: vw(34);
+          background: rgba(0, 0, 0, 0.6);
+          font-size: vw(16);
+          font-weight: bold;
+          text-align: center;
+          line-height: vw(34);
+        }
+      }
+    }
+    .details-text {
+      margin-top: vw(4);
+      font-size: vw(16);
+      color: #fff;
+      line-height: vw(26);
+      > p {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin: 0;
+      }
+    }
+    .dispose-status {
+      font-size: vw(18);
+      font-weight: bold;
+      position: absolute;
+      right: vw(19);
+      bottom: vw(19);
+    }
+  }
+}

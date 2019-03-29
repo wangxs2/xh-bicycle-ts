@@ -1,0 +1,140 @@
+.viewPage {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  .bg {
+    width: 100%;
+    height: 100%;
+    background: url('~@img/login/bg.png') no-repeat center/cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+  .login-form {
+    padding-top: 28.1vh;
+    box-sizing: border-box;
+    .form-box {
+      width: 13.7vw;
+      height: 43.8vh;
+      background: rgba(38, 94, 170, 0.6);
+      margin: 0 auto;
+      padding: 0 1.7vw;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #00cafa;
+      h2 {
+        margin: 0;
+        font-size: 0.19rem;
+        font-weight: bold;
+      }
+      .error-message {
+        height: 3.8vh;
+        line-height: 3.8vh;
+        color: red;
+        font-size: 0.16rem;
+      }
+      .login-border {
+        margin-top: 0.9vh;
+        width: 8.8vw;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          rgba(23, 62, 130, 1) 1%,
+          rgba(29, 217, 244, 1) 50%,
+          rgba(23, 63, 131, 1) 100%
+        );
+        border-radius: 50%;
+      }
+      form {
+        width: 100%;
+        .form-item {
+          position: relative;
+          margin-bottom: 1.7vh;
+          input {
+            width: 100%;
+            height: 5.6vh;
+            outline: none;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            display: inline-block;
+            background: transparent;
+            border: 2px solid #00cafa;
+            padding-left: 1.5vw;
+            font-size: 0.17rem;
+            color: rgba(0, 249, 251, 1);
+            &::placeholder {
+              color: rgba(0, 249, 251, 0.3);
+            }
+          }
+          .inp-icon {
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 1.5vh 0.5vw;
+            box-sizing: border-box;
+            img {
+              display: inline-block;
+              width: 0.7vw;
+              height: 2.6vh;
+            }
+          }
+        }
+        .form-itemVerify {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          input {
+            width: 5.7vw;
+            height: 5.6vh;
+            outline: none;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            display: inline-block;
+            background: transparent;
+            border: 2px solid #00cafa;
+            padding-left: 0.4vw;
+            font-size: 0.17rem;
+            color: rgba(0, 249, 251, 1);
+            &::placeholder {
+              color: rgba(0, 249, 251, 0.3);
+            }
+          }
+          .verify-box {
+            width: 4vw;
+            height: 5.6vh;
+            box-sizing: border-box;
+            background: rgba(0, 202, 250, 0.5);
+            border: 2px solid #00cafa;
+            img {
+              width: 100%;
+              height: 100%;
+              cursor: pointer;
+            }
+          }
+        }
+        .form-sub {
+          margin-top: 4.3vh;
+          width: 100%;
+          height: 5.6vh;
+          background: rgba(2, 27, 61, 0.9);
+          border-radius: 0.7vh;
+          text-align: center;
+          line-height: 5.6vh;
+          font-size: 0.16rem;
+          color: #fff;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .errorColor {
+    border-color: red !important;
+  }
+}
