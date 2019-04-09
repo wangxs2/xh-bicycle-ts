@@ -104,3 +104,25 @@ export const judgeType: Function = (n: any): string => {
 
   return typeName
 }
+
+/**
+ * @method 拷贝
+ * @param {any} 数据
+ * @return {any}
+ */
+export const cloneObj: Function = (obj: any) => {
+  let str: string
+  let newobj: any = obj.constructor === Array ? [] : {}
+
+  if (typeof obj !== 'object') {
+    return obj
+  } else if (JSON) {
+    str = JSON.stringify(obj)
+    newobj = JSON.parse(str)
+  } else {
+    for (let i in obj) {
+      newobj[i] = typeof obj[i] === 'object' ? cloneObj(obj[i]) : obj[i]
+    }
+  }
+  return newobj
+}

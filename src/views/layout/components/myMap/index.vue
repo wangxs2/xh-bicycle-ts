@@ -91,6 +91,71 @@
       <div class="dispose-status">{{workOrderDisposeData.despatchStatus}}</div>
     </div>
     <!-- 工单详情 E -->
+
+    <!-- 治理轮循 S -->
+    <div class="workOrders"
+         v-if="isShowRoundRobinData">
+      <slideshow parendClassName="workOrders"
+                 :options="roundRobinOptions">
+        <div class="swiper-slide"
+             v-for="(item,index) in roundRobinData"
+             :key="index">
+          <div class="workOrder-item">
+            <div class="details-status">{{item.nowStatus}}</div>
+            <div class="imgs">
+              <img :src="item.roundRobinimg">
+            </div>
+            <div class="details-text">
+              <p v-for="(subItem,SubIndex) in item.detailsTexts"
+                 :key="SubIndex">
+                <span>{{subItem.key}}：</span>
+                <span>{{subItem.val}}</span>
+              </p>
+            </div>
+            <div class="dispose-status">{{item.despatchStatus}}</div>
+          </div>
+        </div>
+      </slideshow>
+    </div>
+    <!-- 治理轮循 E -->
+
+    <!-- 图例 S -->
+    <div class="map-legend"
+         @mouseleave="isShowLegendTab = false"
+         v-if="isShowLegend">
+      <div class="legend-item"
+           @click="showLegendTable(index)"
+           v-for="(item,index) in legendData"
+           :key="index">
+        <img :src="item.icon">
+        <span>{{item.name}}</span>
+      </div>
+
+      <div class="workOrder-tab"
+           v-show="isShowLegendTab">
+        <div class="slide-box">
+          <div class="tab-head">
+            <div :style="{width: item.width + '%'}"
+                 v-for="(item,index) in legendTabHead[selectLegend]"
+                 :key="index">
+              <span>{{item.name}}</span>
+            </div>
+          </div>
+          <div class="tab-body">
+            <div class="tab-item"
+                 v-for="(item,index) in sheetWorkOrder[selectLegend]"
+                 :key="index">
+              <div :style="{width: legendTabHead[selectLegend][subindex].width + '%'}"
+                   v-for="(subItem,subindex) in item"
+                   :key="subindex">
+                <span>{{subItem}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 图例 E -->
   </div>
 </template>
 

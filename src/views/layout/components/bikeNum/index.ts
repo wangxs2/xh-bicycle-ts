@@ -1,8 +1,13 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { toThousands } from '@/libs/util.ts'
 import API from '@/api/index.ts'
+import DigitRoll from '@huoyu/vue-digitroll'
 
-@Component
+@Component({
+  components: {
+    DigitRoll
+  }
+})
 export default class BikeNum extends Vue {
   // @Prop() private msg!: string;
   putInSelectFlag: boolean = false // 打开投放量的选择框

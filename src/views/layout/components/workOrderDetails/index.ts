@@ -18,7 +18,7 @@ export default class WorkDetails extends Vue {
   getWorkOrder(): void {
     // 昨天
     const startTime: string = moment()
-      .subtract(10, 'days')
+      .subtract(14, 'days')
       .format('YYYY-MM-DD')
 
     const endTime: string = moment().format('YYYY-MM-DD')

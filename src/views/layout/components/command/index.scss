@@ -1,0 +1,60 @@
+.command-box {
+  width: 100%;
+  height: 100%;
+  .swiper-slide {
+    width: 100%;
+    height: 100%;
+    .command-content {
+      width: 100%;
+      height: 100%;
+      font-size: vw(9);
+      color: #fff;
+      .town-item {
+        width: 100%;
+        height: vh(71);
+        margin-top: vh(5);
+        background: #292c3e;
+        &:first-of-type {
+          margin: 0;
+        }
+        .town-item-one {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          .town-name {
+            width: vw(75);
+            height: vh(18);
+            background: #28539f;
+            border-radius: vw(2);
+            font-size: vw(10);
+            color: #fff;
+            text-align: center;
+            line-height: vh(18);
+            margin-top: vh(5);
+            margin-left: vw(5);
+          }
+          .phone-tit {
+            width: 50%;
+            text-align: center;
+            align-self: flex-end;
+          }
+        }
+        .town-item-rest {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          margin-top: vh(10);
+          .rest-left {
+            width: 50%;
+            text-align: center;
+          }
+          .rest-right {
+            width: 50%;
+            text-align: center;
+            color: #52ffff;
+          }
+        }
+      }
+    }
+  }
+}

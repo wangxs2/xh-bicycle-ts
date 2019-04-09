@@ -97,6 +97,18 @@ export default class Map extends Vue {
   // 是否显示工单详情
   private isShowWorkOrderDispose: boolean = false
 
+  // 治理轮循数据
+  private roundRobinOptions: any = null
+  // 是否显示治理轮循
+  private isShowRoundRobinData: boolean = false
+
+  //是否显示图例
+  private isShowLegend: boolean = true
+  //是否显示表格
+  private isShowLegendTab: boolean = false
+  // 当前选中的图例
+  private selectLegend: number | string = -1
+
   // 图例数据
   private legendData: Array<{ icon: any; name: string }> = [
     {
@@ -119,6 +131,95 @@ export default class Map extends Vue {
       icon: require('@img/icon_5@3x.png'),
       name: '超时未处理'
     }
+  ]
+
+  private legendTabHead: Array<any> = [
+    [
+      {
+        name: '自检时间',
+        width: 30
+      },
+      {
+        name: '自检单位',
+        width: 26
+      },
+      {
+        name: '整理数',
+        width: 22
+      },
+      {
+        name: '清运数',
+        width: 22
+      }
+    ],
+    [
+      {
+        name: '派单单位',
+        width: 33
+      },
+      {
+        name: '派单对象',
+        width: 33
+      },
+      {
+        name: '派单部门',
+        width: 33
+      }
+    ],
+    [
+      {
+        name: '派单时间',
+        width: 33
+      },
+      {
+        name: '派单对象',
+        width: 33
+      },
+      {
+        name: '已处理企业',
+        width: 33
+      }
+    ],
+    [
+      {
+        name: '派单时间',
+        width: 25
+      },
+      {
+        name: '派单对象',
+        width: 20
+      },
+      {
+        name: '处理时间',
+        width: 25
+      },
+      {
+        name: '整理数',
+        width: 15
+      },
+      {
+        name: '清运数',
+        width: 15
+      }
+    ],
+    [
+      {
+        name: '派单时间',
+        width: 25
+      },
+      {
+        name: '派单对象',
+        width: 25
+      },
+      {
+        name: '已处理企业',
+        width: 25
+      },
+      {
+        name: '超时企业',
+        width: 25
+      }
+    ]
   ]
 
   mounted() {
@@ -148,9 +249,30 @@ export default class Map extends Vue {
       case '禁停区域':
         break
       case '单车治理':
+        this.isShowLegend = data.state
         myMap.isWorkGroup(data.state)
         break
       case '治理轮循':
+        this.$nextTick(function() {
+          this.roundRobinOptions = {
+            autoplay: true, //可选选项，自动滑动
+            simulateTouch: false,
+            observer: true, // 修改swiper自己或子元素时，自动初始化swiper
+            observeParents: true, // 修改swiper的父元素时，自动初始化swiper
+            $isPage: true,
+            $isNav: true,
+            pagination: {
+              el: '.workOrders .swiper-pagination',
+              clickable: true
+            },
+            navigation: {
+              nextEl: '.workOrders .swiper-button-next',
+              prevEl: '.workOrders .swiper-button-prev'
+            },
+            loop: true
+          }
+          this.isShowRoundRobinData = data.state
+        })
         break
       case '预警播报':
         break
@@ -158,9 +280,19 @@ export default class Map extends Vue {
   }
 
   /**
+   * 选择图例获取 对应状态工单
+   */
+  private showLegendTable(index: number | string) {
+    this.$nextTick(function() {
+      this.selectLegend = index
+      this.isShowLegendTab = true
+    })
+  }
+
+  /**
    * 无闪动刷新点
    */
-  refreshPointData(data: any): void {
+  private refreshPointData(data: any): void {
     let workOrderObjItem: any = {},
       icon: any = null
 
@@ -210,7 +342,7 @@ export default class Map extends Vue {
    * @param {String} code 工单编码
    * @param {Number} type 返回类型 1工单详情 2治理轮循
    */
-  disposeWorkOrderDetails(code: string, type: number) {
+  private disposeWorkOrderDetails(code: string, type: number) {
     let data: any = this.workOrderObjData[code]
 
     let statusData: any = this.judgeStatus(code, data.sheetStatus) // 格式状态
@@ -282,7 +414,9 @@ export default class Map extends Vue {
         detailsImgs = []
         let dispatchReceive = ''
         data.voList.forEach((item: any) => {
-          dispatchReceive = item.dispatchReceive
+          dispatchReceive = statusData.isDespatch
+            ? item.dispatchReceive
+            : item.dispatchOrgName
           item.dispatchBeforePhotoURLs.forEach((beforeItem: any) => {
             detailsImgs.push({
               text: `${dispatchReceive}处理前`,
@@ -338,7 +472,7 @@ export default class Map extends Vue {
    * @param {Number} status 工单状态
    * @return {Object} 对应工单的状态
    */
-  judgeStatus(code: string, status: number): any {
+  private judgeStatus(code: string, status: number): any {
     let icon: any = null,
       nowStatus: string = '',
       despatchStatus: string = '',
@@ -411,7 +545,7 @@ export default class Map extends Vue {
   /**
    * 获取指定街道/区单车治理情况
    */
-  getAreaIdAndDate(): void {
+  private getAreaIdAndDate(): void {
     // let startTime: string = moment().format('YYYY-MM-DD')
     let startTime = '2019-03-18'
 
@@ -451,7 +585,7 @@ export default class Map extends Vue {
   /**
    * 分拣不同状态的工单
    */
-  sortOutWorkOrder(res: any): void {
+  private sortOutWorkOrder(res: any): void {
     // 判断工单的类型
     let item: Array<any> = [],
       sortArr: Array<any> = []

@@ -8,7 +8,7 @@
 
         <div class="cont-tit">
           <img src="~@img/left@2x.png">
-          <div>共享单车基础数据</div>
+          <div class="cont-text">共享单车基础数据</div>
           <img src="~@img/right@2x.png">
         </div>
 
@@ -53,7 +53,7 @@
 
         <div class="cont-tit mg-top-4">
           <img src="~@img/left@2x.png">
-          <div>共享单车工单</div>
+          <div class="cont-text">共享单车工单</div>
           <img src="~@img/right@2x.png">
         </div>
 
@@ -67,7 +67,7 @@
       <div class="cont-center">
 
         <div class="cont-tit">
-          <div>徐汇区共享单车实时分布情况</div>
+          <div class="cont-text">徐汇区共享单车实时分布情况</div>
         </div>
 
         <div class="map">
@@ -77,9 +77,41 @@
       </div>
       <div class="cont-right">
 
-        <div class="work-order-data"></div>
+        <div class="work-order-data">
+          <div class="cont-tit">
+            <img src="~@img/left@2x.png">
+            <div class="cont-text">共享单车工单</div>
+            <img src="~@img/right@2x.png">
+          </div>
 
-        <div class="command-handle"></div>
+          <div class="order-situation">
+            <border-block>
+              <order-situation></order-situation>
+            </border-block>
+          </div>
+
+          <div class="order-disposal">
+            <border-block>
+              <work-dispose></work-dispose>
+            </border-block>
+          </div>
+        </div>
+
+        <div class="command-handle">
+          <div class="cont-tit">
+            <img src="~@img/left-arrow.png"
+                 class="small-arrow left-arrow">
+            <img src="~@img/left@2x.png">
+            <div class="cont-text">指挥督办</div>
+            <img src="~@img/right@2x.png">
+            <img src="~@img/right-arrow.png"
+                 class="small-arrow right-arrow">
+          </div>
+
+          <div class="commandbox">
+            <command :townData="townData"></command>
+          </div>
+        </div>
 
       </div>
     </div>
@@ -87,16 +119,19 @@
 </template>
 
 <script lang="ts">
-import pageTop from "./components/top/index.vue";
+import pageTop from "./components/top/index";
 import borderBlock from "@/components/borderBlock/index.vue";
-import bikeNum from "./components/bikeNum/index.vue";
+import bikeNum from "./components/bikeNum/index";
 import rankBlock from "@/components/rankBlock/index.vue";
-import workOrderDetails from "./components/workOrderDetails/index.vue";
-import myMap from "./components/myMap/index.vue";
+import workOrderDetails from "./components/workOrderDetails/index";
+import myMap from "./components/myMap/index";
+import orderSituation from "./components/ordersituation/index";
+import workDispose from "./components/workDispose/index";
+import command from "./components/command/index";
 
 import { Component, Vue } from "vue-property-decorator";
 import API from "@/api/index";
-import { refinedCal } from "@/libs/util.ts";
+import { refinedCal, cloneObj } from "@/libs/util.ts";
 import moment from "moment";
 
 moment.locale("zh-cn");
@@ -108,16 +143,21 @@ moment.locale("zh-cn");
     bikeNum,
     rankBlock,
     workOrderDetails,
-    myMap
+    myMap,
+    orderSituation,
+    workDispose,
+    command
   }
 })
 export default class Layout extends Vue {
   // 重点区排名数据
-  activeRange: Array<{}> = [];
+  private activeRange: Array<{}> = [];
   // 早高峰排名数据
-  morningTop: Array<{}> = [];
+  private morningTop: Array<{}> = [];
   // 晚高峰排名数据
-  eveningTop: Array<{}> = [];
+  private eveningTop: Array<{}> = [];
+  // 街镇数据
+  private townData: Array<{}> = [];
 
   created() {
     this.getKeyArea();
@@ -125,10 +165,11 @@ export default class Layout extends Vue {
   }
 
   // 获取重点区域排名
-  getKeyArea(): void {
+  private getKeyArea(): void {
     API.getKeyArea().then(
       (res: any): void => {
         if (res.status === 0) {
+          this.townData = cloneObj(res.activeRange);
           res.activeRange = res.activeRange.slice(0, 10);
 
           this.activeRange = res.activeRange.map(
@@ -146,7 +187,7 @@ export default class Layout extends Vue {
   }
 
   // 早晚高峰 获取数据
-  getPeakRanking(): void {
+  private getPeakRanking(): void {
     // 昨天
     const yesterday = moment()
       .subtract(1, "days")
@@ -178,7 +219,7 @@ export default class Layout extends Vue {
   }
 
   // 处理早晚高峰数据
-  disPeak(data: Array<{}>, type: number): void {
+  private disPeak(data: Array<{}>, type: number): void {
     // TOP10
     const topData: Array<any> = data.slice(0, 10);
 
@@ -234,12 +275,26 @@ export default class Layout extends Vue {
       justify-content: center;
       color: #20c0fe;
       font-size: vw(12);
-      div {
+      position: relative;
+      div.cont-text {
         margin: 0 vw(8);
       }
       img {
         width: vw(14);
-        height: vh(10);
+        height: vw(10);
+      }
+      .small-arrow {
+        outline: none;
+        position: absolute;
+        width: vw(7);
+        height: vw(11);
+        cursor: pointer;
+        &:first-of-type {
+          left: 0;
+        }
+        &:last-of-type {
+          right: 0;
+        }
       }
     }
     .mg-top-4 {
@@ -294,13 +349,27 @@ export default class Layout extends Vue {
       .work-order-data {
         width: vw(225);
         height: 100%;
-        background: #000;
+        .order-situation {
+          width: 100%;
+          height: vh(290);
+        }
+        .order-disposal {
+          width: 100%;
+          margin-top: vh(10);
+          height: vh(150);
+        }
       }
       .command-handle {
         margin-left: vw(10);
         width: vw(225);
         height: 100%;
-        background: #000;
+        display: flex;
+        flex-direction: column;
+        .commandbox {
+          width: 100%;
+          height: 1px;
+          flex: 1;
+        }
       }
     }
   }

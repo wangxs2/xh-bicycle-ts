@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Watch, Vue } from "vue-property-decorator";
 
 import Swiper from "swiper";
 import "swiper/dist/css/swiper.min.css";
@@ -37,6 +37,13 @@ export default class Slideshow extends Vue {
   @Prop()
   private options!: any; // 配置项
 
+  // @Watch("options")
+  // onchanged(val: any, old: any) {
+  //   if (Object.keys(val).length !== 0) {
+  //     this.initSwiper();
+  //   }
+  // }
+
   beforeDestroy() {
     if (this.swiperNode) {
       this.swiperNode.destroy();
@@ -45,19 +52,19 @@ export default class Slideshow extends Vue {
   }
 
   created() {
-    if (this.options.pagination) {
+    if (this.options.pagination && this.options.$isPage) {
       this.isShowPagination = true;
     }
-    if (this.options.navigation) {
+    if (this.options.navigation && this.options.$isNav) {
       this.isShowNavigation = true;
     }
   }
 
   mounted() {
-    this.init();
+    this.initSwiper();
   }
 
-  init(): void {
+  initSwiper(): void {
     this.swiperNode = new Swiper(
       `.${this.parendClassName} .swiper-container`,
       this.options

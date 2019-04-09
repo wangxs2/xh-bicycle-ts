@@ -9,6 +9,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@types/echarts": "^4.1.8",
     "@types/mathjs": "^5.0.1",
     "@types/nprogress": "0.0.29",
     "@types/qs": "^6.5.2",

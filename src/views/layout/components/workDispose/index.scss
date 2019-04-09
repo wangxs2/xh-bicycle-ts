@@ -1,0 +1,30 @@
+.workdis {
+  width: 100%;
+  height: 100%;
+  padding: vh(10) vw(10);
+  box-sizing: border-box;
+  .workdis-tit {
+    color: #f4f4f4;
+    font-size: vw(9);
+    line-height: 1;
+    margin-top: vh(10);
+    margin-bottom: vh(20);
+    font-weight: bold;
+    text-align: center;
+  }
+  .workOrderBox {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    .echart-content {
+      width: vw(56);
+      height: vw(56);
+    }
+    .name-text {
+      font-size: vw(10);
+      color: #c3cad9;
+      text-align: center;
+      margin-top: vh(10);
+    }
+  }
+}

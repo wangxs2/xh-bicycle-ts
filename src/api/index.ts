@@ -99,13 +99,36 @@ export default {
     endDate: string,
     type: string = '',
     sheetStatus: string = ''
-  ) {
+  ): Promise<{}> {
     return http('bikeDispatch/findBikeDispatchByAreaIdAndDate/' + getKey(), {
       params: {
         startDate,
         endDate,
         type,
         sheetStatus
+      }
+    })
+  },
+
+  /**
+   * 工单数据
+   * @param {String} countType week周，month月
+   */
+  getWorkOrder(): Promise<{}> {
+    return http('bikeDispatch/countRecentWeek/' + getKey(), {
+      params: {
+        countType: 'week'
+      }
+    })
+  },
+
+  /**
+   * 企业处置率
+   */
+  getRoughHandling() {
+    return http('bikeDispatch/dealRateRecentWeek/' + getKey(), {
+      params: {
+        countType: 'week'
       }
     })
   }
