@@ -127,6 +127,7 @@ export default class RankBlock extends Vue {
     flex: 1;
     width: 100%;
     height: 1px;
+    position: relative;
     .rank-item {
       width: 100%;
       margin-top: vh(8);

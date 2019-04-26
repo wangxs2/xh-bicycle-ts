@@ -2,7 +2,7 @@ interface Params {
   el: string
   [propName: string]: any
 }
-
+import circleShow from './circleShow'
 import { judgeType } from '@/libs/util.ts'
 
 class MyMap {
@@ -21,12 +21,20 @@ class MyMap {
   public areaPointGroup: any = new AMap.OverlayGroup() // 区级点集合 街道
   public areaBorderGroup: any = new AMap.OverlayGroup() // 区级边界集合 街道
   public ApointEvent: Array<any> = [] // 区级点事件
+  public CpointEvent: Array<any> = [] // 市级点事件
 
   public isPointInfo: boolean = true // 行政区域点是否显示
 
   public workOrderGroup: any = new AMap.OverlayGroup() // 工单集合
 
-  public workEvent: any = {} // 工单集合的事件
+  public workEvent: Array<any> = [] // 工单集合的事件
+
+  public stationGroup: any = new AMap.OverlayGroup() //嗅探集合
+  public rippleGroup: any = new AMap.OverlayGroup() // 水波效果集合
+  public stationFunc: any = null // 嗅探功能点
+  public stationEvent: Array<any> = [] // 蓝牙点事件
+
+  public ripples: any = {} // 水波纹效果实例
 
   constructor(data: Params) {
     this.el = data.el
@@ -34,7 +42,8 @@ class MyMap {
     this.initMap()
     this.initHeatMap()
 
-    this.maoEvent()
+    this.mapEvent()
+    this.creactStationFunc()
   }
 
   // 初始化地图
@@ -55,8 +64,124 @@ class MyMap {
       this.cityPointGroup,
       this.cityBorderGroup,
       this.areaPointGroup,
-      this.areaBorderGroup
+      this.areaBorderGroup,
+      this.stationGroup,
+      this.rippleGroup
     ])
+  }
+
+  // 创建蓝牙嗅探（蓝牙基站）点
+  public createStationPoint(data: any): object {
+    const position = new AMap.LngLat(data.centerLng, data.centerLat)
+    const marker: object = new AMap.Marker({
+      position,
+      offset: new AMap.Pixel(-11, -11),
+      content: this.setStationContent(data.onLineStatus),
+      topWhenClick: true,
+      extData: { code: data.terminalId }
+    })
+
+    // const circle = new circleShow({
+    //   center: position,
+    //   radius: 30,
+    //   level: 3,
+    //   color: {
+    //     fillColor: this.BleColor(data.onLineStatus),
+    //     fillOpacity: 1
+    //   }
+    // })
+
+    // this.ripples[data.terminalId] = circle
+
+    // this.addOverlayGroup('rippleGroup', circle.circleGroup)
+
+    return marker
+  }
+
+  // 修改蓝牙点
+  public updatedStationPoint(data: any): void {
+    const Evnet = this.stationGroup.getOverlays().find(
+      (item: any): boolean => {
+        return item.he.extData.code === data.terminalId
+      }
+    )
+
+    // 修改水波颜色
+    this.ripples[data.terminalId].color.fillColor = this.BleColor(
+      data.onLineStatus
+    )
+
+    Evnet.setContent(this.setStationContent(data.onLineStatus))
+  }
+
+  // 蓝牙点事件
+  public stationGroupEvent(callback: Function): void {
+    // 事件先清除再添加
+    this.stationEvent.forEach((item: any) => {
+      AMap.event.removeListener(item)
+    })
+
+    this.stationEvent = []
+
+    this.stationEvent.push(
+      AMap.event.addListener(this.stationGroup, 'click', (e: any) => {
+        const code: string = e.target.getExtData().code
+
+        code && callback(code)
+      })
+    )
+  }
+
+  // 创建蓝牙嗅探（蓝牙基站） 功能点
+  public creactStationFunc(): void {
+    this.stationFunc = new AMap.Marker({
+      position: new AMap.LngLat(0, 0),
+      offset: new AMap.Pixel(-27, -27),
+      content: this.setStationFuncContent()
+    })
+    this.stationFunc.hide()
+    this.map.add(this.stationFunc)
+  }
+
+  // 打开嗅探功能
+  public openStationFunc(position: any): void {
+    this.stationFunc.setPosition(position)
+    this.stationFunc.show()
+  }
+
+  // 关闭嗅探功能
+  public closeStationFunc() {
+    this.stationFunc.hide()
+  }
+
+  // 设置 蓝牙嗅探功能的样式
+  public setStationFuncContent(): string {
+    return `<div class="station-func-box animated rotateIn">
+      <div class="point-location" data-type="点位"></div>
+      <div class="list-info" data-type="列表"></div>
+      <div class="statistics" data-type="统计"></div>
+      <div class="bad" data-type="僵尸车"></div>
+    </div>`
+  }
+
+  // 判断蓝牙状态返回颜色
+  public BleColor(state: string): string {
+    let color: string = ''
+    if (state === '离线') {
+      color = '#ff0000'
+    } else if (state === '在线') {
+      color = '#14e1ff'
+    } else {
+      color = '#ff0000'
+    }
+    return color
+  }
+
+  // 设置蓝牙嗅探（蓝牙基站）点样式
+  public setStationContent(state: string): string {
+    return `<div style="width:22px;height:22px;background:${this.BleColor(
+      state
+    )};border-radius: 50%;"></div>`
   }
 
   // 创建工单
@@ -87,17 +212,24 @@ class MyMap {
 
   // 工单事件
   public workGroupEvent(callback: Function): void {
-    AMap.event.removeListener(this.workEvent)
+    // 事件先清除再添加
+    this.workEvent.forEach((item: any) => {
+      AMap.event.removeListener(item)
+    })
 
-    this.workEvent = AMap.event.addListener(
-      this.workOrderGroup,
-      'click',
-      callback
+    this.workEvent = []
+
+    this.workEvent.push(
+      AMap.event.addListener(this.workOrderGroup, 'click', (e: any) => {
+        const code: string = e.target.getExtData().code
+
+        code && callback(code)
+      })
     )
   }
 
   // 地图事件
-  public maoEvent(): void {
+  public mapEvent(): void {
     // 地图缩放级别
     this.map.on('zoomend', () => {
       this.pointGroupControl()
@@ -144,11 +276,38 @@ class MyMap {
   public createCityPoint(markData: any): object {
     const marker: object = new AMap.Marker({
       position: new AMap.LngLat(markData.lng, markData.lat),
-      offset: new AMap.Pixel(-40, -40),
+      offset: new AMap.Pixel(-65, -65),
       content: this.setContent(markData),
-      extData: { code: markData.name }
+      extData: { data: markData }
     })
     return marker
+  }
+
+  // 市级点 事件
+  public CityPointEvent(): void {
+    // 事件先清除再添加
+    this.CpointEvent.forEach((item: any) => {
+      AMap.event.removeListener(item)
+    })
+    this.CpointEvent = []
+
+    this.CpointEvent.push(
+      AMap.event.addListener(this.cityPointGroup, 'click', (e: any) => {
+        this.setZoomAndCenter(14, e.lnglat)
+      })
+    )
+    this.CpointEvent.push(
+      AMap.event.addListener(this.cityPointGroup, 'mousemove', (e: any) => {
+        const tagNode = e.target.he.contentDom.children[0]
+        tagNode.style.backgroundColor = this.getColor(1000)
+      })
+    )
+    this.CpointEvent.push(
+      AMap.event.addListener(this.cityPointGroup, 'mouseout', (e: any) => {
+        const tagNode = e.target.he.contentDom.children[0]
+        tagNode.style.backgroundColor = this.getColor(-1)
+      })
+    )
   }
 
   // 修改市级点
@@ -156,27 +315,51 @@ class MyMap {
     this.cityPointGroup.getOverlays()[0].setContent(this.setContent(markData))
   }
 
-  // 设置内容
-  public setContent(row: any): string {
-    return `<div class="adminPoint" style="background-color: #db36f5;opacity: 0.8;color:#ffffff; height: 110px; width: 110px; border-radius: 50%;">
-        <div style="padding-top:20px;text-align: center;">
+  // 状态转颜色
+  public getColor(state: number = -1): string {
+    let color: string = ''
+    switch (state) {
+      case -1:
+        color = '#8094dd'
+        break
+      case 1:
+        color = '#FF6D10'
+        break
+      case 0:
+        color = '#FE4A5D'
+        break
+      default:
+        color = '#db36f5'
+    }
+    return color
+  }
+
+  // 设置内容 蓝色： #8094dd 紫色：#db36f5 黄色：#FF6D10
+  public setContent(row: any, state: number = -1): string {
+    return `<div class="adminPoint" style="font-size:16px;font-weight:bold;background-color: ${this.getColor(
+      state
+    )};opacity: 0.8;color:#ffffff; height: 130px; width: 130px; border-radius: 50%;">
+        <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items: center;">
           <p style="margin:0;padding-bottom:10px">${row.name}</p>
           <p style="margin:0">总量:${row.bicycleNum}</p>
-          <p style="margin:0">活跃率:${row.activeNum}</p>
+          <p style="margin:0;margin-top:5px;">活跃率:${row.activeNum}</p>
         </div>
       </div>
     `
   }
 
   // 创建区级 边界
-  public createAreaBorder(path: Array<[]>): object {
+  public createAreaBorder(path: Array<[]>, name: string): object {
     const polygon: object = new AMap.Polygon({
       path: path,
       strokeColor: '#db36f5',
       strokeWeight: 2,
       strokeOpacity: 1,
       fillColor: '#0d2055',
-      fillOpacity: 0
+      fillOpacity: 0,
+      extData: {
+        name
+      }
     })
     return polygon
   }
@@ -185,16 +368,22 @@ class MyMap {
   public createAreaPoint(markData: any): object {
     const marker: object = new AMap.Marker({
       position: new AMap.LngLat(markData.lng, markData.lat),
-      offset: new AMap.Pixel(-40, -40),
+      offset: new AMap.Pixel(-65, -65),
       topWhenClick: true,
-      content: this.setContent(markData),
-      extData: { index: markData.index }
+      content: this.setContent(markData, markData.state),
+      extData: {
+        index: markData.index,
+        name: markData.name,
+        state: markData.state
+      }
     })
     return marker
   }
 
   // 区级点 事件
-  public AreaPointEvent(): void {
+  public AreaPointEvent(callback: Function): void {
+    // 小优化
+    let nameFlag: string = ''
     // 事件先清除再添加
     this.ApointEvent.forEach((item: any) => {
       AMap.event.removeListener(item)
@@ -202,24 +391,67 @@ class MyMap {
     this.ApointEvent = []
 
     this.ApointEvent.push(
+      AMap.event.addListener(this.areaPointGroup, 'click', (e: any) => {
+        const name: string = e.target.getExtData().name
+
+        name && callback(name)
+      })
+    )
+    this.ApointEvent.push(
       AMap.event.addListener(this.areaPointGroup, 'mousemove', (e: any) => {
-        const index: number = e.target.getExtData().index
-        this.areaBorderGroup.getOverlays()[index].show()
+        const name: string = e.target.getExtData().name
+        if (nameFlag !== name) {
+          const tagNode = e.target.he.contentDom.children[0]
+          // 显示边界
+          this.areaBorderGroup
+            .getOverlays()
+            .find(
+              (item: any): boolean => {
+                return item.he.extData.name === name
+              }
+            )
+            .show()
+          nameFlag = name
+          // 选中状态
+          tagNode.style.backgroundColor = this.getColor(100)
+        }
       })
     )
     this.ApointEvent.push(
       AMap.event.addListener(this.areaPointGroup, 'mouseout', (e: any) => {
-        const index: number = e.target.getExtData().index
-        this.areaBorderGroup.getOverlays()[index].hide()
+        const params: any = e.target.getExtData()
+        const name: string = params.name
+        const state: number = params.state
+        const tagNode = e.target.he.contentDom.children[0]
+        // 隐藏边界
+        this.areaBorderGroup
+          .getOverlays()
+          .find(
+            (item: any): boolean => {
+              return item.he.extData.name === name
+            }
+          )
+          .hide()
+        tagNode.style.backgroundColor = this.getColor(state)
+        nameFlag = ''
       })
     )
   }
 
-  // 修改市级点
-  public upDateAreaPoint(index: number, markData: any): void {
-    this.areaPointGroup
-      .getOverlays()
-      [index].setContent(this.setContent(markData))
+  // 修改区级点
+  public upDateAreaPoint(name: string, markData: any): void {
+    const Evnet = this.areaPointGroup.getOverlays().find(
+      (item: any): boolean => {
+        return item.he.extData.name === name
+      }
+    )
+
+    Evnet.setContent(this.setContent(markData, markData.state))
+    Evnet.setExtData({
+      index: markData.index,
+      name: markData.name,
+      state: markData.state
+    })
   }
 
   // 初始化热力图
@@ -290,7 +522,7 @@ class MyMap {
   // 设置地图中心点和缩放级别 coord 数组
   public setZoomAndCenter(
     zoom: number = 10,
-    coord: Array<string | number> = this.mapCenter
+    coord: any = this.mapCenter
   ): void {
     this.map.setZoomAndCenter(zoom, coord)
   }

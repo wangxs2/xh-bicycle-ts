@@ -33,7 +33,8 @@ module.exports = {
     proxy: {
       '/sharebikesclean': {
         // target: 'http://10.1.4.73:8090/sharebikesclean',
-        target: 'http://10.1.30.210:50081/sharebikesclean',
+        target: 'http://10.1.30.202:18181/sharebikesclean',
+        // target: 'http://106.14.198.128:18181/sharebikesclean',
         changeOrigin: true,
         pathRewrite: {
           '^/sharebikesclean': '/'
@@ -58,9 +59,6 @@ module.exports = {
       }),
       //	Webpack包文件分析器(https://github.com/webpack-contrib/webpack-bundle-analyzer)
       new BundleAnalyzerPlugin()
-      // new webpack.ProvidePlugin({
-      //   Swiper: 'swiper'
-      // })
     ]
 
     //开发环境
@@ -76,6 +74,8 @@ module.exports = {
     } else {
       // 为开发环境修改配置...
       config.plugins = [...config.plugins, ...pluginsDev]
+      // vscode 调试
+      config.devtool = 'source-map'
     }
   },
   css: {

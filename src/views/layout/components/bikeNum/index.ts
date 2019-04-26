@@ -1,12 +1,9 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { toThousands } from '@/libs/util.ts'
 import API from '@/api/index.ts'
-import DigitRoll from '@huoyu/vue-digitroll'
 
 @Component({
-  components: {
-    DigitRoll
-  }
+  components: {}
 })
 export default class BikeNum extends Vue {
   // @Prop() private msg!: string;

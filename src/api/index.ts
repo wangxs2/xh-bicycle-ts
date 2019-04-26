@@ -30,7 +30,7 @@ export default {
   },
 
   /**
-   * 获取重点区域
+   * 获取重点区域的活跃度
    */
   getKeyArea(): Promise<{}> {
     return http('position/findChildOrgActiveRange/' + getKey())
@@ -90,6 +90,17 @@ export default {
   },
 
   /**
+   * 行政区域15天单车活跃曲线图
+   */
+  getBicyActiveCurve(companyCode: string = ''): Promise<{}> {
+    return http('position/findOrgBicycleNumActiveChange/' + getKey(), {
+      params: {
+        companyCode
+      }
+    })
+  },
+
+  /**
    * 获取指定街道/区单车治理情况 工单位置
    * @param {Date} startDate 开始日期，xxxx-xx-xx
    * @param {Date} endDate 结束日期，xxxx-xx-xx，若要查某天的数据，开始日期和结束日期一样即可
@@ -125,11 +136,27 @@ export default {
   /**
    * 企业处置率
    */
-  getRoughHandling() {
+  getRoughHandling(): Promise<{}> {
     return http('bikeDispatch/dealRateRecentWeek/' + getKey(), {
       params: {
         countType: 'week'
       }
+    })
+  },
+
+  /**
+   * 获取蓝牙设备
+   */
+  getBleContainStatus(): Promise<{}> {
+    return http('ble/findOrgAllBleContainStatus/' + getKey())
+  },
+
+  /**
+   * 获取近七天蓝牙设备检测到的车辆情况
+   */
+  getBleCompanyTrend(params: any): Promise<{}> {
+    return http('ble/findBleCompanyNumList/' + getKey(), {
+      params
     })
   }
 }

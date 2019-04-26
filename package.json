@@ -13,6 +13,7 @@
     "@types/mathjs": "^5.0.1",
     "@types/nprogress": "0.0.29",
     "@types/qs": "^6.5.2",
+    "@types/screenfull": "^4.1.0",
     "@types/swiper": "^4.4.2",
     "animate.css": "^3.7.0",
     "axios": "^0.18.0",

@@ -10,3 +10,13 @@ $vh_base: 540;
 @function vh($px) {
   @return ($px / $vh_base) * 100vh;
 }
+
+// 动画
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}

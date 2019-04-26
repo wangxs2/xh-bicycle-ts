@@ -1,6 +1,9 @@
 import { Component, Vue } from 'vue-property-decorator'
 import slideshow from '@/components/slideshow/index.vue'
-import { arrGroup } from '@/libs/util.ts'
+import bicyTrendChart from './components/bicyTrendChart.vue'
+import stationInfo from './components/stationInfo.vue'
+import bluStatistics from './components/bluStatistics.vue'
+import { arrGroup, refinedCal, eventDelegate } from '@/libs/util.ts'
 import API from '@/api/index.ts'
 import MyMap from './map'
 import moment from 'moment'
@@ -17,11 +20,17 @@ interface DataFormat {
   name: string // 区域名称
   bicycleNum: number // 车辆数
   activeNum: number // 活跃数
+  activeRate?: number // 活跃率
+  warningFlag?: number // 预警状态
+  companyCode?: string // 预警状态
 }
 
 @Component({
   components: {
-    slideshow
+    slideshow,
+    bicyTrendChart,
+    stationInfo,
+    bluStatistics
   }
 })
 export default class Map extends Vue {
@@ -47,12 +56,12 @@ export default class Map extends Vue {
     }
   ]
 
-  private selectEnterpriseCode: string = '' // 选择的企业
+  private selectEnterpriseCode: string = 'all' // 选择的企业
 
   // 设置项
   private settingItemData: Array<{}> = [
     {
-      state: true,
+      state: false,
       name: '热力图'
     },
     {
@@ -74,11 +83,11 @@ export default class Map extends Vue {
     {
       state: false,
       name: '治理轮循'
-    },
-    {
-      state: false,
-      name: '预警播报'
     }
+    // {
+    //   state: false,
+    //   name: '预警播报'
+    // }
   ]
 
   // 工单数据
@@ -133,6 +142,7 @@ export default class Map extends Vue {
     }
   ]
 
+  // 图例统计数据
   private legendTabHead: Array<any> = [
     [
       {
@@ -222,11 +232,121 @@ export default class Map extends Vue {
     ]
   ]
 
+  // 打开弹窗记录街镇名称
+  private openTownName: string = ''
+
+  // 十五天单车曲线数据
+  private bicyActiveData: any = {}
+
+  // 单车曲线是否展示
+  private isBicyTrend: boolean = false
+
+  // 当前选中区域的单车区域数据
+  private nowBicyTrendData: any = null
+
+  // 市级别 按三家企业分数据
+  private cityCompanyData: any = null
+
+  // 区级别 按三家企业分数据
+  private townCompanyData: any = null
+
+  // 定时器保存
+  private timeoutObjs: Array<any> = []
+
+  // 蓝牙设备数据
+  private bleContainStatus: any = {}
+
+  // 当前选中的蓝牙基站
+  private thisBleStation: string = ''
+
+  // 是否显示蓝牙点位信息
+  private isBleStatus: boolean = false
+
+  // 显示的蓝牙点位数据
+  private BleStationData: any = null
+
+  created() {
+    this.getBicyActiveCurve()
+  }
+
   mounted() {
     myMap = new MyMap({ el: 'mapContainer' })
     this.getTownBoundary()
     this.getBicyClePosition()
     this.getAreaIdAndDate()
+    this.getBleContainStatus()
+
+    this.stationFuncEvent()
+  }
+
+  // 获取区域15天的活跃曲线数据
+  private getBicyActiveCurve(companyCode: string = ''): void {
+    API.getBicyActiveCurve(companyCode).then(
+      (res: any): void => {
+        this.bicyActiveData = res.changeLine
+      }
+    )
+  }
+
+  // 获取蓝牙设备数据
+  private getBleContainStatus(): void {
+    API.getBleContainStatus().then(
+      (res: any): void => {
+        if (res.status === 0) {
+          res.data.forEach(
+            (item: any): void => {
+              if (this.bleContainStatus[item.terminalId]) {
+                myMap.updatedStationPoint(item)
+              } else {
+                myMap.addOverlayGroup(
+                  'stationGroup',
+                  myMap.createStationPoint(item)
+                )
+              }
+              this.bleContainStatus[item.terminalId] = item
+            }
+          )
+
+          myMap.stationGroupEvent((code: string) => {
+            const data: any = this.bleContainStatus[code]
+            myMap.closeStationFunc()
+
+            if (this.thisBleStation !== code) {
+              myMap.openStationFunc([data.centerLng, data.centerLat])
+              this.thisBleStation = code
+            } else {
+              this.thisBleStation = ''
+            }
+          })
+        }
+      }
+    )
+  }
+
+  /**
+   * 蓝牙嗅探事件绑定
+   */
+  private stationFuncEvent(): void {
+    eventDelegate('#mapContainer', '.station-func-box', 'click', (e: any) => {
+      const type = e[0].target.dataset.type
+      if (type) {
+        switch (type) {
+          case '点位':
+            this.BleStationData = this.bleContainStatus[this.thisBleStation]
+            this.isBleStatus = true
+            break
+          case '列表':
+            break
+          case '统计':
+            break
+          case '僵尸车':
+            break
+        }
+      } else {
+        myMap.closeStationFunc()
+        this.thisBleStation = ''
+      }
+    })
   }
 
   /**
@@ -546,37 +666,31 @@ export default class Map extends Vue {
    * 获取指定街道/区单车治理情况
    */
   private getAreaIdAndDate(): void {
-    // let startTime: string = moment().format('YYYY-MM-DD')
-    let startTime = '2019-03-18'
+    let startTime: string = moment().format('YYYY-MM-DD')
+    // let startTime = '2019-03-18'
 
     API.getAreaIdAndDate(startTime, startTime).then(
       (res: any): void => {
         if (res.status === 0) {
           // 先清除之前的请求
-          // if (this.timeoutObj) {
-          //   clearTimeout(this.timeoutObj)
-          //   this.timeoutObj = null
-          // }
+          if (this.timeoutObjs[0]) {
+            clearTimeout(this.timeoutObjs[0])
+            this.timeoutObjs[0] = null
+          }
           // 数据处理
           this.refreshPointData(res.data)
           // 分拣不同状态工单
           this.sortOutWorkOrder(res.data)
           // 重置事件
-          myMap.workGroupEvent((e: any) => {
-            let code = e.target.getExtData().code
-            console.log(code)
-            if (code) {
-              this.isShowWorkOrderDispose = false
-              this.disposeWorkOrderDetails(code, 1)
-            }
+          myMap.workGroupEvent((code: string) => {
+            this.isShowWorkOrderDispose = false
+            this.disposeWorkOrderDetails(code, 1)
           })
+
           // 定时刷新
-          // this.timeoutObj = setTimeout(
-          //   function() {
-          //     this.getAreaIdAndDate()
-          //   }.bind(this),
-          //   60000
-          // )
+          this.timeoutObjs[0] = setTimeout(() => {
+            this.getAreaIdAndDate()
+          }, 600000)
         }
       }
     )
@@ -688,10 +802,15 @@ export default class Map extends Vue {
     if (this.selectEnterpriseCode !== code) {
       this.selectEnterpriseCode = code
     } else {
-      this.selectEnterpriseCode = ''
+      this.selectEnterpriseCode = 'all'
     }
 
-    this.getBicyClePosition(this.selectEnterpriseCode)
+    this.getBicyClePosition(code)
+    this.getBicyActiveCurve(code)
+    this.disCityData(this.selectEnterpriseCode)
+    this.disAreaData(this.selectEnterpriseCode)
+
+    this.isBicyTrend && this.openFifteenWin(this.openTownName)
   }
 
   /**
@@ -700,41 +819,116 @@ export default class Map extends Vue {
   private getTownBoundary(): void {
     Promise.all([API.getDistrictBoundary(), API.getAreaBoundary()]).then(
       (res: any) => {
-        const cityData: DataFormat = res[0].boundary // 市级数据
-        const areaData: Array<DataFormat> = res[1].data
+        const AllCityData: DataFormat = res[0].boundary // 市级数据
+        const DivideCityData: Array<DataFormat> = res[0].comanyBikeNums // 分企业的市级数据
+        const DivideAreaData: Array<DataFormat> = res[1].dataCompany // 分企业的区级数据
+
+        // 总的区级数据
+        const AllAreaData: Array<DataFormat> = res[1].data.map(
+          (item: any): any => {
+            item.companyCode = 'all'
+            return item
+          }
+        )
 
         // 边界只绘制一次
         if (this.loadNum === 0) {
-          this.disCityBorder(cityData)
-          this.disAreaBorder(areaData)
+          this.disCityBorder(AllCityData)
+          this.disAreaBorder(AllAreaData)
           this.loadNum++
         }
 
-        this.disCityData(cityData)
-        this.disAreaData(areaData)
+        // 合并所有的区域数据
+        const overallArea: Array<DataFormat> = [
+          ...AllAreaData,
+          ...DivideAreaData
+        ]
+        // 合并所有的市级数据
+        AllCityData.companyCode = 'all'
+        const overallCity: Array<DataFormat> = [AllCityData, ...DivideCityData]
+        // const overallCity: Array<DataFormat> = []
+
+        // 分类数据
+        const disTypeData = this.disCompanyData(overallCity, overallArea)
+
+        this.townCompanyData = disTypeData[1]
+        this.cityCompanyData = disTypeData[0]
+
+        this.disCityData(this.selectEnterpriseCode)
+        this.disAreaData(this.selectEnterpriseCode)
       }
     )
   }
 
-  // 处理市的数据
-  private disCityData(data: DataFormat): void {
-    const CityData = {
-      lng: data.centerLongitude,
-      lat: data.centerLatitude,
-      name: data.name,
-      bicycleNum: data.bicycleNum,
-      activeNum: data.activeNum
-    }
+  // 处理数据 按企业分
+  private disCompanyData(
+    city: Array<DataFormat>,
+    town: Array<DataFormat>
+  ): Array<any> {
+    let cityData: any = {}
+    let townData: any = {}
 
-    // 有点修改 没有就添加
-    if (this.cityPointData.name == data.name) {
+    // 数据类型
+    const typeData: Array<any> = [
+      {
+        name: '全部',
+        code: 'all'
+      },
+      ...this.enterpriseData
+    ]
+
+    typeData.forEach(
+      (item: any): void => {
+        townData[item.code] = []
+        cityData[item.code] = {}
+
+        city.forEach(
+          (subItem: DataFormat): void => {
+            if (subItem.companyCode === item.code) {
+              cityData[item.code] = {
+                lng: subItem.centerLongitude,
+                lat: subItem.centerLatitude,
+                name: subItem.name,
+                bicycleNum: subItem.bicycleNum,
+                activeNum: refinedCal(`${subItem.activeRate}*100`, 2) + '%'
+              }
+            }
+          }
+        )
+        town.forEach(
+          (subItem: DataFormat): void => {
+            if (subItem.companyCode === item.code) {
+              townData[item.code].push({
+                lng: subItem.centerLongitude,
+                lat: subItem.centerLatitude,
+                name: subItem.name,
+                bicycleNum: subItem.bicycleNum,
+                activeNum: refinedCal(`${subItem.activeRate}*100`, 2) + '%',
+                state: subItem.warningFlag
+              })
+            }
+          }
+        )
+      }
+    )
+
+    return [cityData, townData]
+  }
+
+  // 处理市的数据
+  private disCityData(key: string): void {
+    const CityData: DataFormat = this.cityCompanyData[key]
+
+    // 有修改 没有就添加
+    if (this.cityPointData.name == CityData.name) {
       myMap.upDateCityPoint(CityData)
     } else {
-      this.cityPointData = data
+      this.cityPointData = CityData
       myMap
         .addOverlayGroup('cityPointGroup', myMap.createCityPoint(CityData))
         .hide()
     }
+    myMap.CityPointEvent()
   }
 
   // 处理市级边界
@@ -749,34 +943,31 @@ export default class Map extends Vue {
   }
 
   // 处理区级点
-  private disAreaData(data: Array<DataFormat>) {
-    let pointData: any = null
-    let overlays: Array<{}> = [] // 覆盖物集合
+  private disAreaData(key: string): void {
+    const data: Array<any> = this.townCompanyData[key]
 
-    data.forEach((item: DataFormat, index: number) => {
-      pointData = {
-        index,
-        lng: item.centerLongitude,
-        lat: item.centerLatitude,
-        name: item.name,
-        bicycleNum: item.bicycleNum,
-        activeNum: item.activeNum
-      }
-
+    data.forEach((item: any) => {
       if (this.areaPointData[item.name]) {
-        myMap.upDateAreaPoint(this.areaPointData[item.name].index, pointData)
+        myMap.upDateAreaPoint(item.name, item)
       } else {
-        this.areaPointData[item.name] = pointData
-        overlays.push(myMap.createAreaPoint(pointData))
+        this.areaPointData[item.name] = item
+        myMap
+          .addOverlayGroup('areaPointGroup', myMap.createAreaPoint(item))
+          .hide()
       }
     })
 
-    if (overlays.length) {
-      myMap.addOverlayGroup('areaPointGroup', overlays).hide()
-      myMap.AreaPointEvent()
-    }
+    myMap.AreaPointEvent(this.openFifteenWin)
+  }
 
-    // console.log(this.areaPointData)
+  // 打开街镇 十五天趋势弹窗
+  private openFifteenWin(name: string): void {
+    let fifteenData: any = (this as any).bicyActiveData[name]
+    this.openTownName = fifteenData.name = name
+
+    this.isBicyTrend = true
+
+    this.nowBicyTrendData = fifteenData
   }
 
   // 处理区级边界
@@ -786,7 +977,7 @@ export default class Map extends Vue {
     AreaData.forEach(
       (item: DataFormat, index: number): void => {
         border = this.FormatGolygon(item.polygonGeom)
-        overlays.push(myMap.createAreaBorder(border))
+        overlays.push(myMap.createAreaBorder(border, item.name))
       }
     )
 
@@ -807,7 +998,7 @@ export default class Map extends Vue {
    * @param {String} companyCode 单车企业编码
    */
   private getBicyClePosition(companyCode?: string): void {
-    API.getBicyClePosition(companyCode).then(
+    API.getBicyClePosition(companyCode === 'all' ? '' : companyCode).then(
       (res: any): void => {
         if (res.status === 0) {
           myMap.setHeatMapData(res.hotGraph)
