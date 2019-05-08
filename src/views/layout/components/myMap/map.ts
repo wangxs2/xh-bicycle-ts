@@ -36,6 +36,9 @@ class MyMap {
 
   public ripples: any = {} // 水波纹效果实例
 
+  public staffGroup: any = new AMap.OverlayGroup() // 人员位置集合
+  public staffEvent: Array<any> = [] // 人员位置事件集合
+
   constructor(data: Params) {
     this.el = data.el
 
@@ -66,8 +69,93 @@ class MyMap {
       this.areaPointGroup,
       this.areaBorderGroup,
       this.stationGroup,
-      this.rippleGroup
+      this.rippleGroup,
+      this.staffGroup
     ])
+  }
+
+  // 创建人员位置点
+  public createStaffPoint(data: any, icon: any, flag: boolean): object {
+    const marker: any = new AMap.Marker({
+      position: new AMap.LngLat(data.gpsLongitude, data.gpsLatitude),
+      offset: new AMap.Pixel(-11, -11),
+      topWhenClick: true,
+      icon: new AMap.Icon({
+        size: new AMap.Size(22, 22),
+        image: icon,
+        imageSize: new AMap.Size(22, 22)
+      }), // 添加 Icon 图标 URL
+      extData: { code: data.code, id: data.userId }
+    })
+    flag ? marker.hide() : marker.hide()
+    return marker
+  }
+
+  // 修改人员位置点
+  public upDataStaffPoint(data: any): void {
+    const target = this.staffGroup.getOverlays().find(
+      (item: any): boolean => {
+        return item.he.extData.id === data.userId
+      }
+    )
+
+    target.setPosition(new AMap.LngLat(data.gpsLongitude, data.gpsLatitude))
+  }
+
+  // 筛选人员位置点
+  public screenStaffPoint(code: string): void {
+    this.staffGroup.getOverlays().forEach(
+      (item: any): void => {
+        if (item.he.extData.code.includes(code)) {
+          item.show()
+        } else {
+          item.hide()
+        }
+      }
+    )
+  }
+
+  // 人员事件点
+  public staffGroupEvent(callback: Function): void {
+    // 事件先清除再添加
+    this.staffEvent.forEach((item: any) => {
+      AMap.event.removeListener(item)
+    })
+
+    this.staffEvent = []
+
+    this.staffEvent.push(
+      AMap.event.addListener(this.staffGroup, 'click', (e: any) => {
+        const id: string = e.target.getExtData().id
+
+        id && callback(id)
+      })
+    )
+  }
+
+  // 是否显示人员位置点
+  public isStaffGroup(flag: boolean): void {
+    flag ? this.staffGroup.show() : this.staffGroup.hide()
+  }
+
+  // 是否显示蓝牙嗅探相关
+  public isStationPoint(flag: boolean): void {
+    if (flag) {
+      this.stationGroup.show()
+      this.rippleGroup.show()
+
+      Object.values(this.ripples).forEach((item: any) => {
+        item.start()
+      })
+    } else {
+      this.stationGroup.hide()
+      this.rippleGroup.hide()
+      this.stationFunc.hide()
+
+      Object.values(this.ripples).forEach((item: any) => {
+        item.end()
+      })
+    }
   }
 
   // 创建蓝牙嗅探（蓝牙基站）点
@@ -100,7 +188,7 @@ class MyMap {
 
   // 修改蓝牙点
   public updatedStationPoint(data: any): void {
-    const Evnet = this.stationGroup.getOverlays().find(
+    const target = this.stationGroup.getOverlays().find(
       (item: any): boolean => {
         return item.he.extData.code === data.terminalId
       }
@@ -111,7 +199,7 @@ class MyMap {
       data.onLineStatus
     )
 
-    Evnet.setContent(this.setStationContent(data.onLineStatus))
+    target.setContent(this.setStationContent(data.onLineStatus))
   }
 
   // 蓝牙点事件

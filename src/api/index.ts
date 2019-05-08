@@ -158,5 +158,39 @@ export default {
     return http('ble/findBleCompanyNumList/' + getKey(), {
       params
     })
+  },
+
+  /**
+   * 获取当前时间 蓝牙检测车辆数（按单车企业）统计
+   */
+  getBleCompanyNum(params: any): Promise<{}> {
+    return http('ble/staticsBleCheckNumContainPerCompany/' + getKey(), {
+      params
+    })
+  },
+
+  /**
+   * 获取人员位置信息 http://10.1.4.72:8090/sharebikesclean/personPosition/getUserPositionMsg?UouLaDG9Dt931%7CVrNZp2nQ%3D%3D
+   */
+  getUserPositionMsg(): Promise<{}> {
+    return http('personPosition/getUserPositionMsg/' + getKey())
+  },
+
+  /**
+   * 获取嗅探设备检查的单车列表
+   */
+  getBikeDetailInfo(params: any): Promise<{}> {
+    return http('ble/findBleCheckBikeDetailInfo/' + getKey(), {
+      params
+    })
+  },
+
+  /**
+   * 获取嗅探设备检查的僵尸车列表
+   */
+  getBadBikeInfo(params: any): Promise<{}> {
+    return http('ble/findCompanyAbandonAnalysisResult/' + getKey(), {
+      params
+    })
   }
 }

@@ -22,11 +22,15 @@
         <div class="label">设备状态:</div>
         <div class="value">{{params.onLineStatus}}</div>
       </li>
-      <li>
+      <li v-if="params.type === 0">
+        <div class="label">是否浸水:</div>
+        <div class="value">{{params.bWater | waterType}}</div>
+      </li>
+      <li v-if="params.type === 1">
         <div class="label">系统电压:</div>
         <div class="value">{{params.sysVoltage}}</div>
       </li>
-      <li>
+      <li v-if="params.type === 1">
         <div class="label">电池电流:</div>
         <div class="value">{{params.batteryCurrent}}</div>
       </li>
@@ -34,7 +38,7 @@
         <div class="label">电池电压:</div>
         <div class="value">{{params.batteryVoltage}}</div>
       </li>
-      <li>
+      <li v-if="params.type === 1">
         <div class="label text-spacing">太阳能电压:</div>
         <div class="value">{{params.powerVoltage}}</div>
       </li>
@@ -59,9 +63,18 @@ import { Component, Vue, Prop, Emit } from "vue-property-decorator";
     formatType(value: number): string {
       let type: string = "--";
       if (value === 0) {
-        type = "蓝牙";
+        type = "地埋式蓝牙嗅探设备";
       } else if (value === 1) {
-        type = "云岛";
+        type = "抱杆式蓝牙嗅探设备";
+      }
+      return type;
+    },
+    waterType(value: number): string {
+      let type: string = "--";
+      if (value === 0) {
+        type = "否";
+      } else if (value === 1) {
+        type = "是";
       }
       return type;
     }

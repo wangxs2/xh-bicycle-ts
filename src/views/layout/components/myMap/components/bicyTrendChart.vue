@@ -41,9 +41,12 @@ export default class BicyTrendChart extends Vue {
 
   // 关闭弹窗 清除数据
   @Emit()
-  close(): void {
-    this.chartNode.clear();
+  close() {}
+
+  beforeDestroy() {
+    this.chartNode.dispose();
     this.chartNode = null;
+    window.removeEventListener("resize", this.resizeEvent);
   }
 
   // 初始化图表
@@ -51,9 +54,12 @@ export default class BicyTrendChart extends Vue {
     const Cnode: any = this.$refs.bicyActiveTrend;
     this.chartNode = echarts.init(Cnode);
 
-    window.addEventListener("resize", () => {
-      this.chartNode.resize();
-    });
+    window.addEventListener("resize", this.resizeEvent);
+  }
+
+  // 事件执行
+  private resizeEvent() {
+    this.chartNode.resize();
   }
 
   // 配置

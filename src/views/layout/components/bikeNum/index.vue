@@ -21,6 +21,7 @@
           </div>
         </transition>
       </div>
+      <!-- <numRoll :value="3000"></numRoll> -->
       <div class="bike-num-box"
            style="color:#FFFF50;">
         <div v-for="(item,index) in putInNumDate[putInSelect].bicycleNum"

@@ -21,26 +21,31 @@
                 leave-active-class="animated fadeOutRight">
       <div class="setting-content"
            v-show="settingShow">
-        <div class="area-name">
-          <img src="@img/select_pre.png"
-               draggable="false">
-          <span>徐汇区</span>
-        </div>
 
         <!-- 企业 -->
-        <div class="enterprises">
-          <div class="enterprise-item"
-               @click="selectEnterprise(item.code)"
-               v-for="(item,index) in enterpriseData"
-               :key="index">
-            <img src="@img/select_pre.png"
-                 draggable="false"
-                 v-if="selectEnterpriseCode === item.code">
-            <img src="@img/select_nor.png"
-                 draggable="false"
-                 v-else>
-            <span>{{item.name}}</span>
+        <div class="area-enterprises">
+          <div class="area-name">徐汇区</div>
+          <div class="enterprises"
+               @click="isShowEnterprise = !isShowEnterprise">
+            <span>{{selectEnterpriseName}}</span>
+            <i class="iconfont icon-arrLeft-fill drop-down"
+               :class="{active:isShowEnterprise}"></i>
           </div>
+
+          <transition name="fade">
+            <div class="drop-down-select"
+                 v-show="isShowEnterprise">
+              <div class="triangle-up"></div>
+              <ul class="select-box">
+                <li v-for="item in enterpriseData"
+                    @click="selectEnterprise(item.code,item.name)"
+                    :key="item.code"
+                    :class="{active :selectEnterpriseCode === item.code}">
+                  <span>{{item.name}}</span>
+                </li>
+              </ul>
+            </div>
+          </transition>
         </div>
         <!-- 企业 -->
 
@@ -147,12 +152,60 @@
 
     <!-- 蓝牙嗅探统计 S -->
     <transition name="fade">
-      <blu-statistics>
+      <blu-statistics v-if="isBleStatistics"
+                      @close="isBleStatistics = false"
+                      :params="BleStationData">
       </blu-statistics>
     </transition>
     <!-- 蓝牙嗅探统计 E -->
 
-    <!-- 图例 S -->
+    <!-- 蓝牙嗅探检测到的车辆 S -->
+    <transition name="fade">
+      <bleCheck-table v-if="isBleBickList"
+                      @close="isBleBickList = false"
+                      :params="BleStationData">
+      </bleCheck-table>
+    </transition>
+    <!-- 蓝牙嗅探检测到的车辆 E -->
+
+    <!-- 僵尸车统计 S -->
+    <transition name="fade">
+      <bad-bicy-statistics v-if="isBleBadStatistics"
+                           @close="isBleBadStatistics = false"
+                           :params="BleStationData">
+      </bad-bicy-statistics>
+    </transition>
+    <!-- 僵尸车统计 E -->
+
+    <!-- 人员位置信息 S -->
+    <transition name="fade">
+      <staff-position v-if="isStaffData"
+                      @close="isStaffData = false"
+                      :params="StaffData">
+      </staff-position>
+    </transition>
+    <!-- 人员位置信息 E -->
+
+    <!-- 人员图例 S -->
+    <transition name="fade">
+      <div class="staff-legend"
+           v-if="isShowStaffLegend">
+        <div class="legend-item"
+             @click="screenItem(item.code)"
+             :class="{sub:item.type == 'children',active: staffTypeSelect === item.code}"
+             v-for="(item,index) in staffLegendData"
+             :key="index">
+          <div class="legend-icon">
+            <img :src="item.icon"
+                 :class="{small:item.size == 'small'}">
+          </div>
+          <span>{{item.name}}: {{staffTypeDate[item.code]}}</span>
+        </div>
+      </div>
+    </transition>
+    <!-- 人员图例 E -->
+
+    <!-- 工单图例 S -->
     <transition name="fade">
       <div class="map-legend"
            @mouseleave="isShowLegendTab = false"
@@ -190,7 +243,7 @@
         </div>
       </div>
     </transition>
-    <!-- 图例 E -->
+    <!-- 工单图例 E -->
   </div>
 </template>
 

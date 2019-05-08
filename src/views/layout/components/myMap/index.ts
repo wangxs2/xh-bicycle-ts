@@ -3,6 +3,9 @@ import slideshow from '@/components/slideshow/index.vue'
 import bicyTrendChart from './components/bicyTrendChart.vue'
 import stationInfo from './components/stationInfo.vue'
 import bluStatistics from './components/bluStatistics.vue'
+import staffPosition from './components/StaffPosition.vue'
+import bleCheckTable from './components/bleCheckTable.vue'
+import badBicyStatistics from './components/badBicyStatistics.vue'
 import { arrGroup, refinedCal, eventDelegate } from '@/libs/util.ts'
 import API from '@/api/index.ts'
 import MyMap from './map'
@@ -11,6 +14,23 @@ import moment from 'moment'
 moment.locale('zh-cn')
 
 let myMap: any = null // 地图实例
+
+// 人员图片
+const staffImgs: any = {
+  dispatch: require('@img/staffLegend/督办人员@3x.png'),
+  manage: require('@img/staffLegend/管理@3x.png'),
+  clean: require('@img/staffLegend/运维@3x.png'),
+  'clean-1006': require('@img/staffLegend/摩拜运维@3x.png'),
+  'clean-1007': require('@img/staffLegend/OFO运维@3x.png'),
+  'clean-1015': require('@img/staffLegend/哈罗运维@3x.png'),
+  'clean-1059': require('@img/staffLegend/享骑运维@3x.png'),
+  'clean-1014': require('@img/staffLegend/赳赳运维@3x.png'),
+  'manage-1006': require('@img/staffLegend/摩拜管理人员@3x.png'),
+  'manage-1007': require('@img/staffLegend/OFO管理人员@3x.png'),
+  'manage-1015': require('@img/staffLegend/哈罗管理人员@3x.png'),
+  'manage-1059': require('@img/staffLegend/享骑管理人员@3x.png'),
+  'manage-1014': require('@img/staffLegend/赳赳管理人员@3x.png')
+}
 
 interface DataFormat {
   centerLongitude: number // 中心点
@@ -30,7 +50,10 @@ interface DataFormat {
     slideshow,
     bicyTrendChart,
     stationInfo,
-    bluStatistics
+    bluStatistics,
+    staffPosition,
+    bleCheckTable,
+    badBicyStatistics
   }
 })
 export default class Map extends Vue {
@@ -42,6 +65,10 @@ export default class Map extends Vue {
 
   // 企业数据
   private enterpriseData: Array<{}> = [
+    {
+      name: '全部',
+      code: 'all'
+    },
     {
       name: '摩拜',
       code: '07mobike'
@@ -56,7 +83,10 @@ export default class Map extends Vue {
     }
   ]
 
-  private selectEnterpriseCode: string = 'all' // 选择的企业
+  private isShowEnterprise: boolean = false
+
+  private selectEnterpriseCode: string = 'all' // 选择的企业编码
+  private selectEnterpriseName: string = '全部' // 选择的企业名称
 
   // 设置项
   private settingItemData: Array<{}> = [
@@ -83,6 +113,14 @@ export default class Map extends Vue {
     {
       state: false,
       name: '治理轮循'
+    },
+    {
+      state: true,
+      name: '蓝牙嗅探'
+    },
+    {
+      state: false,
+      name: '人员位置'
     }
     // {
     //   state: false,
@@ -117,6 +155,90 @@ export default class Map extends Vue {
   private isShowLegendTab: boolean = false
   // 当前选中的图例
   private selectLegend: number | string = -1
+
+  // 人员位置图例
+  private staffLegendData: Array<any> = [
+    {
+      icon: staffImgs['dispatch'],
+      code: 'dispatch',
+      name: '工单督办人员'
+    },
+    {
+      icon: staffImgs['clean'],
+      code: 'clean',
+      size: 'small',
+      name: '企业运维人员'
+    },
+    {
+      icon: staffImgs['clean-1006'],
+      code: 'clean-1006',
+      type: 'children',
+      name: '摩拜'
+    },
+    {
+      icon: staffImgs['clean-1007'],
+      code: 'clean-1007',
+      type: 'children',
+      name: 'OFO'
+    },
+    {
+      icon: staffImgs['clean-1015'],
+      code: 'clean-1015',
+      type: 'children',
+      name: '哈罗'
+    },
+    {
+      icon: staffImgs['clean-1059'],
+      code: 'clean-1059',
+      type: 'children',
+      name: '享骑'
+    },
+    {
+      icon: staffImgs['clean-1014'],
+      code: 'clean-1014',
+      type: 'children',
+      name: '赳赳'
+    },
+    {
+      icon: staffImgs['manage'],
+      code: 'manage',
+      size: 'small',
+      name: '企业管理人员'
+    },
+    {
+      icon: staffImgs['manage-1006'],
+      code: 'manage-1006',
+      type: 'children',
+      name: '摩拜'
+    },
+    {
+      icon: staffImgs['manage-1007'],
+      code: 'manage-1007',
+      type: 'children',
+      name: 'OFO'
+    },
+    {
+      icon: staffImgs['manage-1015'],
+      code: 'manage-1015',
+      type: 'children',
+      name: '哈罗'
+    },
+    {
+      icon: staffImgs['manage-1059'],
+      code: 'manage-1059',
+      type: 'children',
+      name: '享骑'
+    },
+    {
+      icon: staffImgs['manage-1014'],
+      code: 'manage-1014',
+      type: 'children',
+      name: '赳赳'
+    }
+  ]
+
+  // 是否显示人员位置图例
+  private isShowStaffLegend: boolean = false
 
   // 图例数据
   private legendData: Array<{ icon: any; name: string }> = [
@@ -265,6 +387,30 @@ export default class Map extends Vue {
   // 显示的蓝牙点位数据
   private BleStationData: any = null
 
+  // 是否显示蓝牙检测的车辆统计
+  private isBleStatistics: boolean = false
+
+  // 是否显示蓝牙检测的车辆列表
+  private isBleBickList: boolean = false
+
+  // 是否显示蓝牙检测的僵尸车统计
+  private isBleBadStatistics: boolean = false
+
+  // 员工分类数据
+  private staffTypeDate: any = {}
+
+  // 显示的员工数据
+  private userPositionMsg: any = {}
+
+  // 是否展示人员位置信息
+  private isStaffData: boolean = false
+
+  // 人员位置信息
+  private StaffData: any = {}
+
+  // 人员筛选
+  private staffTypeSelect: string = ''
+
   created() {
     this.getBicyActiveCurve()
   }
@@ -275,15 +421,91 @@ export default class Map extends Vue {
     this.getBicyClePosition()
     this.getAreaIdAndDate()
     this.getBleContainStatus()
+    this.getUserPositionMsg()
 
     this.stationFuncEvent()
   }
 
+  // 获取人员位置
+  private getUserPositionMsg(): void {
+    API.getUserPositionMsg().then(
+      (res: any): void => {
+        this.staffTypeDate = {
+          dispatch: 0, // 督导人员
+          clean: 0, // 运维人员
+          manage: 0, // 管理人员
+          'clean-1006': 0, // 摩拜运维
+          'clean-1007': 0, // ofo运维
+          'clean-1015': 0, // 哈罗运维
+          'clean-1059': 0, // 享骑运维
+          'clean-1014': 0, // 赳赳运维
+          'manage-1006': 0, // 摩拜管理
+          'manage-1007': 0, // ofo管理
+          'manage-1015': 0, // 哈罗管理
+          'manage-1059': 0, // 享骑管理
+          'manage-1014': 0 // 赳赳管理
+        }
+        let code: string = ''
+        res.data.forEach(
+          (item: any): void => {
+            code = item.userCode + '-' + item.companyCode
+            if (item.userCode === 'dispatch') {
+              this.staffTypeDate.dispatch += 1
+              item.code = 'dispatch'
+            } else if (item.userCode === 'clean') {
+              this.staffTypeDate.clean += 1
+            } else if (item.userCode === 'manage') {
+              this.staffTypeDate.manage += 1
+            }
+
+            if (this.staffTypeDate[code] !== undefined) {
+              this.staffTypeDate[code] += 1
+              item.code = code
+            }
+
+            if (item.gpsLongitude && item.gpsLatitude) {
+              if (this.userPositionMsg[item.userId]) {
+                myMap.upDataStaffPoint(item)
+              } else {
+                myMap.addOverlayGroup(
+                  'staffGroup',
+                  myMap.createStaffPoint(
+                    item,
+                    staffImgs[item.code],
+                    this.isShowStaffLegend
+                  )
+                )
+              }
+            }
+            this.userPositionMsg[item.userId] = item
+          }
+        )
+
+        myMap.staffGroupEvent((id: string) => {
+          this.StaffData = this.userPositionMsg[id]
+          this.isStaffData = true
+        })
+      }
+    )
+  }
+
+  // 筛选相关的人员
+  public screenItem(code: string): void {
+    if (this.staffTypeSelect === code) {
+      this.staffTypeSelect = ''
+      myMap.isStaffGroup(true)
+    } else {
+      this.staffTypeSelect = code
+      myMap.screenStaffPoint(code)
+    }
+  }
+
   // 获取区域15天的活跃曲线数据
   private getBicyActiveCurve(companyCode: string = ''): void {
-    API.getBicyActiveCurve(companyCode).then(
+    API.getBicyActiveCurve(companyCode === 'all' ? '' : companyCode).then(
       (res: any): void => {
         this.bicyActiveData = res.changeLine
+        this.isBicyTrend && this.openFifteenWin(this.openTownName)
       }
     )
   }
@@ -332,16 +554,31 @@ export default class Map extends Vue {
       if (type) {
         switch (type) {
           case '点位':
-            this.BleStationData = this.bleContainStatus[this.thisBleStation]
             this.isBleStatus = true
+            this.isBleStatistics = false
+            this.isBleBickList = false
+            this.isBleBadStatistics = false
             break
           case '列表':
+            this.isBleBickList = true
+            this.isBleStatistics = false
+            this.isBleStatus = false
+            this.isBleBadStatistics = false
             break
           case '统计':
+            this.isBleStatistics = true
+            this.isBleStatus = false
+            this.isBleBickList = false
+            this.isBleBadStatistics = false
             break
           case '僵尸车':
+            this.isBleBadStatistics = true
+            this.isBleStatistics = false
+            this.isBleStatus = false
+            this.isBleBickList = false
             break
         }
+        this.BleStationData = this.bleContainStatus[this.thisBleStation]
       } else {
         myMap.closeStationFunc()
         this.thisBleStation = ''
@@ -393,6 +630,13 @@ export default class Map extends Vue {
           }
           this.isShowRoundRobinData = data.state
         })
+        break
+      case '蓝牙嗅探':
+        myMap.isStationPoint(data.state)
+        break
+      case '人员位置':
+        this.isShowStaffLegend = data.state
+        myMap.isStaffGroup(data.state)
         break
       case '预警播报':
         break
@@ -798,19 +1042,17 @@ export default class Map extends Vue {
    * 选择企业
    * @param {String} code 单车企业编码
    */
-  private selectEnterprise(code: string): void {
-    if (this.selectEnterpriseCode !== code) {
-      this.selectEnterpriseCode = code
-    } else {
-      this.selectEnterpriseCode = 'all'
-    }
+  private selectEnterprise(code: string, name: string): void {
+    this.isShowEnterprise = false
+    if (this.selectEnterpriseCode === code) return
+
+    this.selectEnterpriseCode = code
+    this.selectEnterpriseName = name
 
     this.getBicyClePosition(code)
     this.getBicyActiveCurve(code)
     this.disCityData(this.selectEnterpriseCode)
     this.disAreaData(this.selectEnterpriseCode)
-
-    this.isBicyTrend && this.openFifteenWin(this.openTownName)
   }
 
   /**
@@ -869,13 +1111,7 @@ export default class Map extends Vue {
     let townData: any = {}
 
     // 数据类型
-    const typeData: Array<any> = [
-      {
-        name: '全部',
-        code: 'all'
-      },
-      ...this.enterpriseData
-    ]
+    const typeData: Array<any> = this.enterpriseData
 
     typeData.forEach(
       (item: any): void => {

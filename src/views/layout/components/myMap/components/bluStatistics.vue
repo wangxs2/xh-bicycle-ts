@@ -3,22 +3,22 @@
     <div class="close iconfont icon-guanbi"
          @click="close">
     </div>
-    <div class="statis-head">图形统计</div>
+    <div class="statis-head">图形统计 -- {{params.address}}</div>
 
     <div class="statis-body">
       <div class="body-left">
         <div class="body-tit">
           <span class="tit-label">实时车辆数</span>
-          <span>统计时间：2019-01-30 13:26:13</span>
+          <span>统计时间：{{statisticDate}}</span>
         </div>
         <div class="chart"
              ref="currentTimeNum"></div>
       </div>
       <div class="body-right">
         <div class="body-tit">
-          <span class="tit-label">近七天车辆变化曲线</span>
+          <span class="tit-label">{{selectCompany}} 近七天车辆变化曲线</span>
           <div class="screen">
-            <div class="screen-item">
+            <!-- <div class="screen-item">
               <el-select v-model="company"
                          size='mini'
                          placeholder="请选择">
@@ -28,13 +28,16 @@
                            :value="item.value">
                 </el-option>
               </el-select>
-            </div>
+            </div> -->
             <div class="screen-item">
               <el-date-picker size='mini'
                               v-model="selectDate"
                               :editable="false"
                               :clearable="false"
+                              @change="getBleCompanyTrend"
+                              value-format="yyyy-MM-dd"
                               type="date"
+                              :picker-options="pickerOptions"
                               placeholder="选择日期">
               </el-date-picker>
             </div>
@@ -68,32 +71,62 @@ export default class BluStatistics extends Vue {
   // 选择时间
   public selectDate: string = moment(new Date()).format("YYYY-MM-DD");
 
+  // 选中的企业
+  public selectCompany: string = "全部";
+  public selectCompanyCode: string = "";
+
   // 企业数据
   public companyData: Array<any> = [];
+
+  // 统计时间
+  public statisticDate: string = "--";
+
+  // 设置禁止选择的时间
+  public pickerOptions: any = {
+    disabledDate(time: Date) {
+      return time.getTime() > Date.now();
+    }
+  };
+
+  // 企业颜色
+  public companyColors: any = {
+    摩拜: "#FA6447",
+    ofo: "#FBC303",
+    哈啰: "#01A1FF",
+    享骑: "#7CCA00",
+    赳赳: "#FB2D3D"
+  };
 
   @Prop()
   public params!: any;
 
   mounted() {
     this.initChart();
-    // this.echartsOption();
     this.getBleCompanyTrend();
+    this.getBleCompanyNum();
   }
 
   @Watch("params")
   onchanged(val: any, oldVal: any) {
-    // this.echartsOption();
+    this.selectDate = moment(new Date()).format("YYYY-MM-DD");
+    this.selectCompany = "全部";
+    this.selectCompanyCode = "";
+
+    this.getBleCompanyNum();
+    this.getBleCompanyTrend();
+  }
+
+  beforeDestroy() {
+    this.chartLNode.dispose();
+    this.chartRNode.dispose();
+    this.chartLNode = null;
+    this.chartRNode = null;
+    window.removeEventListener("resize", this.resizeEvent);
   }
 
   // 关闭弹窗 清除数据
-  @Emit()
-  close(): void {
-    this.chartLNode.clear();
-    this.chartRNode.clear();
-    this.chartLNode = null;
-    this.chartRNode = null;
-    window.removeEventListener("resize", this.resizeEvent.bind(this));
-  }
+  @Emit("close")
+  close(): void {}
 
   // 初始化图表
   private initChart(): void {
@@ -102,7 +135,25 @@ export default class BluStatistics extends Vue {
     this.chartLNode = echarts.init(lNode);
     this.chartRNode = echarts.init(rNode);
 
-    window.addEventListener("resize", this.resizeEvent.bind(this));
+    this.chartLNode.on(
+      "click",
+      (params: any): void => {
+        if (params.name !== this.selectCompany && params.name !== "单车总数") {
+          this.selectCompany = params.name;
+          this.selectCompanyCode = params.data.code;
+        } else {
+          this.chartLNode.dispatchAction({
+            type: "pieUnSelect",
+            name: this.selectCompany
+          });
+          this.selectCompany = "全部";
+          this.selectCompanyCode = "";
+        }
+        this.getBleCompanyTrend();
+      }
+    );
+
+    window.addEventListener("resize", this.resizeEvent);
   }
 
   // 事件执行
@@ -111,12 +162,45 @@ export default class BluStatistics extends Vue {
     this.chartRNode.resize();
   }
 
+  // 获取实时数据
+  private getBleCompanyNum(): void {
+    API.getBleCompanyNum({
+      terminalId: this.params.terminalId
+    }).then(
+      (res: any): void => {
+        let legend: Array<string> = [];
+        let sum: number = res.total;
+        let data: Array<any> = [];
+        let color: Array<string> = [];
+        let statisticDate: number = 0;
+
+        data = res.companyNum.map(
+          (item: any): any => {
+            legend.push(item.name);
+            color.push(this.companyColors[item.name]);
+            statisticDate =
+              statisticDate < item.uploadTime ? item.uploadTime : statisticDate;
+            return {
+              code: item.companyCode,
+              name: item.name,
+              value: item.num
+            };
+          }
+        );
+        this.statisticDate = moment(new Date(statisticDate)).format(
+          "YYYY-MM-DD HH:mm:ss"
+        );
+        this.LechartsOption(legend, sum, color, data);
+      }
+    );
+  }
+
   // 获取近七天蓝牙设备检测到的车辆情况
   private getBleCompanyTrend(): void {
     API.getBleCompanyTrend({
-      terminalId: "E05E78338DE1",
+      terminalId: this.params.terminalId,
       date: this.selectDate,
-      companyCode: ""
+      companyCode: this.selectCompanyCode
     }).then(
       (res: any): void => {
         let DataX: Array<string> = [];
@@ -125,7 +209,8 @@ export default class BluStatistics extends Vue {
         if (res.status === 0) {
           res.data.forEach(
             (item: any): void => {
-              DataX.push(item.time.slice(5));
+              // DataX.push(item.time.slice(5));
+              DataX.push(item.time);
               DataY.push(item.num);
             }
           );
@@ -137,8 +222,73 @@ export default class BluStatistics extends Vue {
   }
 
   // 配置左边
-  private LechartsOption(): void {
-    const option = {};
+  private LechartsOption(
+    legend: Array<string>,
+    sum: number,
+    color: Array<string>,
+    data: Array<any>
+  ): void {
+    const option = {
+      color: color,
+      legend: {
+        bottom: 18,
+        icon: "circle",
+        textStyle: {
+          color: "#999999"
+        },
+        data: legend
+      },
+      series: [
+        {
+          name: "总数",
+          type: "pie",
+          color: ["#5883ff"],
+          selectedMode: "single",
+          radius: [0, "30%"],
+          center: ["50%", "40%"],
+          label: {
+            normal: {
+              position: "center",
+              formatter: "{a|单车总数}\n{b|{c}}",
+              rich: {
+                a: {
+                  color: "#ffffff",
+                  verticalAlign: "middle",
+                  padding: [8, 0, 0, 0]
+                },
+                b: {
+                  fontSize: 24,
+                  color: "#ffffff",
+                  verticalAlign: "middle"
+                }
+              }
+            }
+          },
+          selectedOffset: 0,
+          data: [{ value: sum, name: "单车总数" }]
+        },
+        {
+          name: "企业",
+          type: "pie",
+          center: ["50%", "40%"],
+          radius: ["40%", "58%"],
+          selectedMode: "single",
+          label: {
+            normal: {
+              formatter: "{a|{b}：{c}辆}\n{a|占比：{d}%}",
+              rich: {
+                a: {
+                  color: "#fff",
+                  align: "left"
+                }
+              }
+            }
+          },
+          data: data
+        }
+      ]
+    };
+    this.chartLNode.setOption(option, true);
   }
 
   // 配置右边
@@ -165,6 +315,20 @@ export default class BluStatistics extends Vue {
         {
           type: "slider",
           xAxisIndex: 0,
+          backgroundColor: "rgba(11, 28, 61, 0.7)",
+          dataBackground: {
+            lineStyle: {
+              color: "#5883FF"
+            },
+            areaStyle: {
+              color: "#5883FF"
+            }
+          },
+          fillerColor: "rgba(167,183,204,0.1)",
+          borderColor: "#657CA8",
+          textStyle: {
+            color: "#657CA8"
+          },
           filterMode: "empty"
         },
         {
@@ -299,7 +463,7 @@ export default class BluStatistics extends Vue {
       justify-content: space-between;
       align-items: center;
       font-size: vw(8);
-      color: #999999;
+      color: #ccc;
       border-bottom: 1px solid rgba(153, 204, 255, 0.25);
       .tit-label {
         font-size: vw(9);

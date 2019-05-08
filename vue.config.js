@@ -32,7 +32,7 @@ module.exports = {
     open: false, //配置自动启动浏览器
     proxy: {
       '/sharebikesclean': {
-        // target: 'http://10.1.4.73:8090/sharebikesclean',
+        // target: 'http://10.1.4.72:8090/sharebikesclean',
         target: 'http://10.1.30.202:18181/sharebikesclean',
         // target: 'http://106.14.198.128:18181/sharebikesclean',
         changeOrigin: true,
