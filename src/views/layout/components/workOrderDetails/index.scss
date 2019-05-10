@@ -14,7 +14,7 @@
       box-sizing: border-box;
       display: flex;
       & > div {
-        font-size: 0.14rem;
+        font-size: vw(8);
         height: vh(18);
         color: #00cafa;
         text-align: center;
@@ -39,7 +39,7 @@
         box-sizing: border-box;
         display: flex;
         & > div {
-          font-size: 0.14rem;
+          font-size: vw(8);
           height: vh(17);
           color: #c3cad9;
           text-align: center;

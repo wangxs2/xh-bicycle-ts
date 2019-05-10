@@ -192,5 +192,14 @@ export default {
     return http('ble/findCompanyAbandonAnalysisResult/' + getKey(), {
       params
     })
+  },
+
+  /**
+   * 获取预警数据
+   */
+  getWaring(params: any): Promise<{}> {
+    return http('position/findOrgWaringAndClearInfo/' + getKey(), {
+      params
+    })
   }
 }

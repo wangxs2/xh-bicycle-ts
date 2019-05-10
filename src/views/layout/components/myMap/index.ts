@@ -6,6 +6,7 @@ import bluStatistics from './components/bluStatistics.vue'
 import staffPosition from './components/StaffPosition.vue'
 import bleCheckTable from './components/bleCheckTable.vue'
 import badBicyStatistics from './components/badBicyStatistics.vue'
+import earlyWarning from './components/earlyWarning.vue'
 import { arrGroup, refinedCal, eventDelegate } from '@/libs/util.ts'
 import API from '@/api/index.ts'
 import MyMap from './map'
@@ -53,7 +54,8 @@ interface DataFormat {
     bluStatistics,
     staffPosition,
     bleCheckTable,
-    badBicyStatistics
+    badBicyStatistics,
+    earlyWarning
   }
 })
 export default class Map extends Vue {
@@ -121,11 +123,11 @@ export default class Map extends Vue {
     {
       state: false,
       name: '人员位置'
+    },
+    {
+      state: false,
+      name: '预警播报'
     }
-    // {
-    //   state: false,
-    //   name: '预警播报'
-    // }
   ]
 
   // 工单数据

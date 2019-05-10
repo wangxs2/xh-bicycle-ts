@@ -30,14 +30,19 @@ module.exports = {
     // host: 'localhost',
     https: false,
     open: false, //配置自动启动浏览器
+    overlay: {
+      warnings: false,
+      errors: true
+    },
     proxy: {
-      '/sharebikesclean': {
+      [process.env.VUE_APP_API_URL]: {
         // target: 'http://10.1.4.72:8090/sharebikesclean',
-        target: 'http://10.1.30.202:18181/sharebikesclean',
+        target: `http://10.1.4.163:8080${process.env.VUE_APP_API_URL}`,
+        // target: `http://10.1.30.202:18181${process.env.VUE_APP_API_URL}`,
         // target: 'http://106.14.198.128:18181/sharebikesclean',
         changeOrigin: true,
         pathRewrite: {
-          '^/sharebikesclean': '/'
+          ['^' + process.env.VUE_APP_API_URL]: '/'
         }
       }
     }
@@ -45,6 +50,53 @@ module.exports = {
   chainWebpack: config => {
     // 配置绝对路径
     config.resolve.alias.set('@img', resolve('src/assets/image'))
+
+    config.plugins.delete('preload') // TODO: need test
+    config.plugins.delete('prefetch') // TODO: need test
+    // set preserveWhitespace
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .loader('vue-loader')
+      .tap(options => {
+        options.compilerOptions.preserveWhitespace = true
+        return options
+      })
+      .end()
+    // 调试
+    config.when(process.env.NODE_ENV === 'development', config =>
+      config.devtool('cheap-source-map')
+    )
+
+    config.when(process.env.NODE_ENV !== 'development', config => {
+      config
+        .plugin('ScriptExtHtmlWebpackPlugin')
+        .after('html')
+        .use('script-ext-html-webpack-plugin', [
+          {
+            // `runtime` must same as runtimeChunk name. default is `runtime`
+            inline: /runtime\..*\.js$/
+          }
+        ])
+        .end()
+      config.optimization.splitChunks({
+        chunks: 'all',
+        cacheGroups: {
+          libs: {
+            name: 'chunk-libs',
+            test: /[\\/]node_modules[\\/]/,
+            priority: 10,
+            chunks: 'initial' // only package third parties that are initially dependent
+          },
+          elementUI: {
+            name: 'chunk-elementUI', // split elementUI into a single package
+            priority: 20, // the weight needs to be larger than libs and app or it will be packaged into libs or app
+            test: /[\\/]node_modules[\\/]_?element-ui(.*)/ // in order to adapt to cnpm
+          }
+        }
+      })
+      config.optimization.runtimeChunk('single')
+    })
   },
   configureWebpack: config => {
     //生产环境
@@ -62,11 +114,7 @@ module.exports = {
     ]
 
     //开发环境
-    let pluginsDev = [
-      // new webpack.ProvidePlugin({
-      //   Swiper: 'swiper'
-      // })
-    ]
+    let pluginsDev = []
 
     if (process.env.NODE_ENV === 'production') {
       // 为生产环境修改配置...process.env.NODE_ENV !== 'development'
@@ -74,8 +122,6 @@ module.exports = {
     } else {
       // 为开发环境修改配置...
       config.plugins = [...config.plugins, ...pluginsDev]
-      // vscode 调试
-      config.devtool = 'source-map'
     }
   },
   css: {

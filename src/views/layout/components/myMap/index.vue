@@ -132,6 +132,13 @@
     </transition>
     <!-- 治理轮循 E -->
 
+    <!-- 预警播报 S -->
+    <transition name="fade">
+      <early-warning v-if="false">
+      </early-warning>
+    </transition>
+    <!-- 预警播报 E -->
+
     <!-- 区域15天活跃单车趋势 S-->
     <transition name="fade">
       <bicyTrendChart v-if="isBicyTrend"

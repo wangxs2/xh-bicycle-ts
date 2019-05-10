@@ -59,7 +59,7 @@ class CircleShow {
     for (let i = 0; i < this.level; i++) {
       circle = new AMap.CircleMarker({
         center: this.center,
-        radius: 0,
+        radius: (this.radius / this.level) * i,
         fillColor: this.color.fillColor,
         fillOpacity: this.color.fillOpacity,
         strokeColor: this.color.fillColor,
@@ -74,40 +74,33 @@ class CircleShow {
 
   public start(): void {
     const now = Date.now()
-    window.requestAnimationFrame(this.animation.bind(this, now, now))
+    window.requestAnimationFrame(this.animation.bind(this))
   }
 
   // 动画
-  private animation(startTiem: number, everyTime: number): void {
-    const now = Date.now()
-    // 每次执行时间 按60HZ 刷
-    const Every = now - everyTime > 167 ? 16.7777777777 : now - everyTime
+  private animation(): void {
     // 每帧 步长
-    const speed = this.speed * Every
-    // 计算每个圆的执行间隔时间
-    const time = now - startTiem
+    // const speed = this.speed * 16.77
+    const speed = this.speed * 30
     // 半径
     let radius = 0
     // 透明度
     let colorOp = 0
-    for (let [index, circle] of this.circles.entries()) {
-      if (time >= index * this.distance) {
-        radius = circle.getRadius() + speed
-        radius = radius >= this.radius ? 0 : radius
-        colorOp = (this.radius - radius) * this.speedOpacity
-        circle.setOptions({
-          radius,
-          fillColor: this.color.fillColor,
-          strokeColor: this.color.fillColor,
-          strokeOpacity: colorOp,
-          fillOpacity: colorOp
-        })
-      }
-    }
 
-    this.clock = window.requestAnimationFrame(
-      this.animation.bind(this, startTiem, now)
-    )
+    this.circles.forEach(circle => {
+      radius = circle.getRadius() + speed
+      radius = radius >= this.radius ? 0 : radius
+      colorOp = (this.radius - radius) * this.speedOpacity
+      circle.setOptions({
+        radius,
+        fillColor: this.color.fillColor,
+        strokeColor: this.color.fillColor,
+        strokeOpacity: colorOp,
+        fillOpacity: colorOp
+      })
+    })
+
+    this.clock = window.requestAnimationFrame(this.animation.bind(this))
   }
 
   public end(): void {

@@ -169,19 +169,19 @@ class MyMap {
       extData: { code: data.terminalId }
     })
 
-    // const circle = new circleShow({
-    //   center: position,
-    //   radius: 30,
-    //   level: 3,
-    //   color: {
-    //     fillColor: this.BleColor(data.onLineStatus),
-    //     fillOpacity: 1
-    //   }
-    // })
+    const circle = new circleShow({
+      center: position,
+      radius: 30,
+      level: 3,
+      color: {
+        fillColor: this.BleColor(data.onLineStatus),
+        fillOpacity: 1
+      }
+    })
 
-    // this.ripples[data.terminalId] = circle
+    this.ripples[data.terminalId] = circle
 
-    // this.addOverlayGroup('rippleGroup', circle.circleGroup)
+    this.addOverlayGroup('rippleGroup', circle.circleGroup)
 
     return marker
   }

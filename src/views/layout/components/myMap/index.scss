@@ -45,8 +45,7 @@
     // height: 41.7vh;
     background: rgba(35, 36, 52, 0.9);
     border: 1px solid rgba(153, 204, 255, 0.25);
-    padding: vw(15) vw(6);
-    padding-top: vw(10);
+    padding: vw(10) vw(6);
     border-radius: vh(2);
     box-sizing: border-box;
     .area-enterprises {
@@ -134,7 +133,7 @@
       }
     }
     .setting-selects {
-      margin-top: vh(14);
+      margin-top: vh(10);
       width: 100%;
       display: flex;
       flex-direction: column;

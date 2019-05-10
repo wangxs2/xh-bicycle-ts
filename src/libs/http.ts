@@ -4,7 +4,7 @@ import qs from 'qs'
 
 // 创建axios实例
 const Axios = axios.create({
-  baseURL: process.env.VUE_APP_API_URL,
+  baseURL: process.env.VUE_APP_API_URL + '/',
   timeout: 10000,
   withCredentials: true // 是否允许带cookie这些
 })
