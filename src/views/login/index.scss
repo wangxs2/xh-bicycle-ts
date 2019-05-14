@@ -28,14 +28,14 @@
       color: #00cafa;
       h2 {
         margin: 0;
-        font-size: 0.19rem;
+        font-size: vw(9);
         font-weight: bold;
       }
       .error-message {
         height: 3.8vh;
         line-height: 3.8vh;
         color: red;
-        font-size: 0.16rem;
+        font-size: vw(8);
       }
       .login-border {
         margin-top: 0.9vh;
@@ -65,7 +65,7 @@
             background: transparent;
             border: 2px solid #00cafa;
             padding-left: 1.5vw;
-            font-size: 0.17rem;
+            font-size: vw(8);
             color: rgba(0, 249, 251, 1);
             &::placeholder {
               color: rgba(0, 249, 251, 0.3);
@@ -100,7 +100,7 @@
             background: transparent;
             border: 2px solid #00cafa;
             padding-left: 0.4vw;
-            font-size: 0.17rem;
+            font-size: vw(8);
             color: rgba(0, 249, 251, 1);
             &::placeholder {
               color: rgba(0, 249, 251, 0.3);
@@ -127,7 +127,7 @@
           border-radius: 0.7vh;
           text-align: center;
           line-height: 5.6vh;
-          font-size: 0.16rem;
+          font-size: vw(8);
           color: #fff;
           cursor: pointer;
         }

@@ -413,6 +413,9 @@ export default class Map extends Vue {
   // 人员筛选
   private staffTypeSelect: string = ''
 
+  // 是否显示预警播报
+  private isEarlyWarning: boolean = false
+
   created() {
     this.getBicyActiveCurve()
   }
@@ -641,6 +644,7 @@ export default class Map extends Vue {
         myMap.isStaffGroup(data.state)
         break
       case '预警播报':
+        this.isEarlyWarning = data.state
         break
     }
   }
@@ -860,10 +864,9 @@ export default class Map extends Vue {
           icon = this.legendData[0].icon
           break
       }
-    }
-
-    // 督办
-    if (code.includes('-DISPATCH-')) {
+    } else {
+      // 督办
+      // if (code.includes('-DISPATCH-'))
       isDespatch = true
       switch (status) {
         case -1:

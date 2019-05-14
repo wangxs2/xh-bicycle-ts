@@ -23,9 +23,13 @@
         <div class="value">{{params.reportTime}}</div>
       </li>
       <li>
+        <div class="label">地&emsp;&emsp;址:</div>
+        <div class="value">{{params.handleAddr}}</div>
+      </li>
+      <!-- <li>
         <div class="label text-spacing3">经&nbsp;纬&nbsp;度:</div>
         <div class="value">{{params.gpsLongitude}}，{{params.gpsLatitude}}</div>
-      </li>
+      </li> -->
     </ul>
 
   </div>

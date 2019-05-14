@@ -134,7 +134,7 @@
 
     <!-- 预警播报 S -->
     <transition name="fade">
-      <early-warning v-if="false">
+      <early-warning v-if="isEarlyWarning">
       </early-warning>
     </transition>
     <!-- 预警播报 E -->

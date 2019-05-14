@@ -33,10 +33,11 @@
       position: relative;
       overflow: hidden;
       .details-item {
-        transition: all 1s;
+        backface-visibility: hidden;
+        transition: all 1.3s;
+        z-index: 1;
         width: 100%;
         height: vh(17.5);
-        box-sizing: border-box;
         display: flex;
         & > div {
           font-size: vw(8);
@@ -54,11 +55,14 @@
     }
   }
 }
+
 .list-complete-enter,
 .list-complete-leave-to {
   opacity: 0;
 }
+
 .list-complete-leave-active {
   position: absolute;
+  transform: translate3d(0, -100%, 0);
   opacity: 0;
 }
