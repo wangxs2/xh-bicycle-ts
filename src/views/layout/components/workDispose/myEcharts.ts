@@ -1,35 +1,35 @@
-import echarts from 'echarts'
+import echarts from 'echarts';
 
 export default class MyEcharts {
-  public disContainer1: any = null
-  public disContainer2: any = null
-  public disContainer3: any = null
+  public disContainer1: any = null;
+  public disContainer2: any = null;
+  public disContainer3: any = null;
 
   constructor() {
-    this.initEcharts()
+    this.initEcharts();
   }
 
   // 初始化
-  initEcharts(): void {
-    const disContainer1: any = document.querySelector('#disContainer1')
-    this.disContainer1 = echarts.init(disContainer1)
+  public initEcharts(): void {
+    const disContainer1: any = document.querySelector('#disContainer1');
+    this.disContainer1 = echarts.init(disContainer1);
 
-    const disContainer2: any = document.querySelector('#disContainer2')
-    this.disContainer2 = echarts.init(disContainer2)
+    const disContainer2: any = document.querySelector('#disContainer2');
+    this.disContainer2 = echarts.init(disContainer2);
 
-    const disContainer3: any = document.querySelector('#disContainer3')
-    this.disContainer3 = echarts.init(disContainer3)
+    const disContainer3: any = document.querySelector('#disContainer3');
+    this.disContainer3 = echarts.init(disContainer3);
 
     window.addEventListener('resize', () => {
-      this.disContainer1.resize()
-      this.disContainer2.resize()
-      this.disContainer3.resize()
-    })
+      this.disContainer1.resize();
+      this.disContainer2.resize();
+      this.disContainer3.resize();
+    });
   }
 
   // 清除
-  clearContainer(el: string) {
-    ;(this as any)[el].clear()
+  public clearContainer(el: string) {
+    (this as any)[el].clear();
   }
 
   // 配置项
@@ -38,11 +38,11 @@ export default class MyEcharts {
   // bar: y轴数据 柱状图
   // line: y轴数据 折线图
   // name: 数据标题
-  echartsOption(params: any): void {
+  public echartsOption(params: any): void {
     const option: any = {
       color: params.color,
       title: {
-        show: false
+        show: false,
       },
       series: [
         {
@@ -56,32 +56,32 @@ export default class MyEcharts {
             show: false,
             position: 'center',
             textStyle: {
-              fontSize: 36
+              fontSize: 36,
             },
             formatter: '{c}{a|%}',
             rich: {
               a: {
                 fontSize: 18,
-                color: '#fff'
-              }
-            }
+                color: '#fff',
+              },
+            },
           },
           data: [
             {
               value: params.value,
               name: '处置',
               label: {
-                show: true
-              }
+                show: true,
+              },
             },
             {
               value: params.unVal,
-              name: ''
-            }
-          ]
-        }
-      ]
-    }
-    ;(this as any)[params.el].setOption(option, true)
+              name: '',
+            },
+          ],
+        },
+      ],
+    };
+    (this as any)[params.el].setOption(option, true);
   }
 }

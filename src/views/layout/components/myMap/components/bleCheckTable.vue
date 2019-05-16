@@ -1,20 +1,16 @@
 <template>
   <div class="bleCheck-table">
-    <div class="close iconfont icon-guanbi"
-         @click="close">
-    </div>
+    <div class="close iconfont icon-guanbi" @click="close"></div>
     <div class="bleCheck-head">列表详情 -- {{params.address}}</div>
     <div class="bleCheck-body">
       <div class="screens">
-        <el-select v-model="company"
-                   @change="getBikeDetailInfo"
-                   size='mini'
-                   placeholder="请选择">
-          <el-option v-for="item in companyData"
-                     :key="item.value"
-                     :label="item.label"
-                     :value="item.value">
-          </el-option>
+        <el-select v-model="company" @change="getBikeDetailInfo" size="mini" placeholder="请选择">
+          <el-option
+            v-for="item in companyData"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
         </el-select>
       </div>
       <div class="table">
@@ -31,10 +27,8 @@
         </div>
         <div class="table-body">
           <el-scrollbar>
-            <table cellpadding='0'
-                   cellspacing="0">
-              <tr v-for="(item,index) in tableData"
-                  :key="item.bikeMac">
+            <table cellpadding="0" cellspacing="0">
+              <tr v-for="(item,index) in tableData" :key="item.bikeMac">
                 <td class="td1">{{(currentPage - 1) * pageSize + index + 1}}</td>
                 <td class="td2">{{item.bikeMac}}</td>
                 <td class="td3">{{item.rssi}}</td>
@@ -46,22 +40,23 @@
         </div>
       </div>
       <div class="paging">
-        <el-pagination :current-page="currentPage"
-                       @size-change="handleSizeChange"
-                       @current-change="handleCurrentChange"
-                       :page-sizes="[20, 50, 100, 200]"
-                       :page-size="pageSize"
-                       layout="total, sizes, prev, pager, next, jumper"
-                       :total="total">
-        </el-pagination>
+        <el-pagination
+          :current-page="currentPage"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :page-sizes="[20, 50, 100, 200]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch, Emit } from "vue-property-decorator";
-import API from "@/api/index.ts";
+import { Component, Vue, Prop, Watch, Emit } from 'vue-property-decorator';
+import API from '@/api/index.ts';
 
 @Component({})
 export default class BleCheckTable extends Vue {
@@ -69,34 +64,34 @@ export default class BleCheckTable extends Vue {
   public params!: any;
 
   // 选择企业
-  private company: string = "";
+  private company: string = '';
 
   // 企业数据
   private companyData: any = [
     {
-      label: "全部",
-      value: ""
+      label: '全部',
+      value: '',
     },
     {
-      label: "摩拜",
-      value: "07mobike"
+      label: '摩拜',
+      value: '07mobike',
     },
     {
-      label: "ofo",
-      value: "05ofo"
+      label: 'ofo',
+      value: '05ofo',
     },
     {
-      label: "哈罗",
-      value: "03hellobike"
+      label: '哈罗',
+      value: '03hellobike',
     },
     {
-      label: "赳赳",
-      value: "0899bike"
+      label: '赳赳',
+      value: '0899bike',
     },
     {
-      label: "享骑",
-      value: "01xqcx"
-    }
+      label: '享骑',
+      value: '01xqcx',
+    },
   ];
 
   // 表格数据
@@ -112,44 +107,46 @@ export default class BleCheckTable extends Vue {
   private pageSize: number = 20;
 
   // 关闭弹窗 清除数据
-  @Emit("close")
-  close(): void {}
+  @Emit('close')
+  public close() {
+    //
+  }
 
-  created() {
+  public created() {
     this.getBikeDetailInfo();
   }
 
-  @Watch("params")
-  onchanged(val: any, oldVal: any) {
+  @Watch('params')
+  public onchanged(val: any, oldVal: any) {
     this.currentPage = 1;
     this.pageSize = 20;
-    this.company = "";
+    this.company = '';
     this.getBikeDetailInfo();
   }
 
   // 获取列表
-  getBikeDetailInfo(): void {
+  public getBikeDetailInfo(): void {
     API.getBikeDetailInfo({
       terminalId: this.params.terminalId,
       page: this.currentPage,
       pageSize: this.pageSize,
-      companyCode: this.company
+      companyCode: this.company,
     }).then(
       (res: any): void => {
         if (res.status === 0) {
           this.tableData = res.data.list;
           this.total = res.data.total;
         }
-      }
+      },
     );
   }
 
-  handleSizeChange(val: number): void {
+  public handleSizeChange(val: number): void {
     this.pageSize = val;
     this.getBikeDetailInfo();
   }
 
-  handleCurrentChange(val: number): void {
+  public handleCurrentChange(val: number): void {
     this.currentPage = val;
     this.getBikeDetailInfo();
   }
@@ -172,12 +169,12 @@ export default class BleCheckTable extends Vue {
     width: 100%;
     .el-scrollbar__wrap {
       overflow-x: hidden;
-      margin-right: -18px !important;
+      // margin-right: -18px !important;
     }
   }
   .paging {
     color: #c0c4cc;
-    button[type="button"] {
+    button[type='button'] {
       background-color: transparent;
     }
     .el-pager {
@@ -202,23 +199,23 @@ export default class BleCheckTable extends Vue {
 <style lang="scss" scoped>
 .bleCheck-table {
   position: absolute;
-  top: vh(30);
-  left: vw(240);
-  width: vw(480);
-  height: vw(365);
+  @include vw2(top, 30);
+  @include vw2(left, 240);
+  @include vw2(width, 480);
+  @include vw2(height, 365);
   background: rgba(11, 28, 61, 0.7);
   border: 1px solid rgba(153, 204, 255, 0.25);
   display: flex;
   flex-direction: column;
   .close {
     position: absolute;
-    right: vw(10);
-    top: vw(10);
-    width: vw(9);
-    height: vw(9);
+    @include vw2(right, 10);
+    @include vw2(top, 10);
+    @include vw2(width, 9);
+    @include vw2(height, 9);
     text-align: center;
-    line-height: vw(9);
-    font-size: vw(10);
+    @include vw2(line-height, 9);
+    @include vw2(font-size, 10);
     cursor: pointer;
     color: #fff;
   }
@@ -227,8 +224,8 @@ export default class BleCheckTable extends Vue {
     // height: vw(19.2);
     background: rgba(153, 204, 255, 0.2);
     color: #fff;
-    font-size: vw(10);
-    line-height: vw(24);
+    @include vw2(font-size, 10);
+    @include vw2(line-height, 24);
     text-align: center;
   }
   .bleCheck-body {
@@ -239,32 +236,31 @@ export default class BleCheckTable extends Vue {
     flex: 1;
     .screens {
       width: 100%;
-      height: vw(17);
-      margin-top: vw(15);
-      margin-bottom: vw(7);
+      @include vw2(height, 17);
+      @include vw2(margin-top, 15);
+      @include vw2(margin-bottom, 7);
     }
     .table {
       width: 100%;
-      height: vw(264);
+      @include vw2(height, 264);
       display: flex;
       flex-direction: column;
-      // background: rgba(153, 204, 255, 0.2);
-      font-size: vw(8);
-      line-height: vw(24);
+      @include vw2(font-size, 8);
+      @include vw2(line-height, 24);
       .td1 {
-        width: vw(30);
+        @include vw2(width, 30);
       }
       .td2 {
-        width: vw(108);
+        @include vw2(width, 108);
       }
       .td3 {
-        width: vw(106);
+        @include vw2(width, 53);
       }
       .td4 {
-        width: vw(106);
+        @include vw2(width, 159);
       }
       .td5 {
-        width: vw(108);
+        @include vw2(width, 108);
       }
       table {
         border-spacing: 0;
@@ -282,11 +278,11 @@ export default class BleCheckTable extends Vue {
         color: #aaaaaa;
         text-align: center;
         font-weight: bold;
-        margin-right: -1px;
+        // margin-right: -1px;
         table {
-          border: 1px solid #444444;
+          border: 1px solid #607391;
           th {
-            border-right: 1px solid #444444;
+            border-right: 1px solid #607391;
             &:last-of-type {
               border: none;
             }
@@ -296,17 +292,15 @@ export default class BleCheckTable extends Vue {
       .table-body {
         flex: 1;
         height: 1px;
-        // overflow: hidden;
-        // overflow-y: auto;
         color: #ffffff;
         text-align: center;
         width: 100%;
         table {
-          border-left: 1px solid #444444;
-          border-right: 1px solid #444444;
+          border-left: 1px solid #607391;
+          border-right: 1px solid #607391;
           td {
-            border-right: 1px solid #444444;
-            border-bottom: 1px solid #444444;
+            border-right: 1px solid #607391;
+            border-bottom: 1px solid #607391;
             &:last-of-type {
               border-right: none;
             }
@@ -315,9 +309,9 @@ export default class BleCheckTable extends Vue {
       }
     }
     .paging {
-      margin-top: vw(10);
+      @include vw2(margin-top, 10);
       width: 100%;
-      height: vw(18);
+      @include vw2(height, 18);
       text-align: center;
     }
   }

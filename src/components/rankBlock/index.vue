@@ -26,8 +26,8 @@
 </template>
 
 <script lang="ts">
-import { arrGroup } from "@/libs/util.ts";
-import { Component, Watch, Prop, Vue } from "vue-property-decorator";
+import { arrGroup } from '@/libs/util.ts';
+import { Component, Watch, Prop, Vue } from 'vue-property-decorator';
 
 interface PropData {
   percentage: string;
@@ -37,10 +37,10 @@ interface PropData {
   [propName: string]: any;
 }
 
-@Component
+@Component({})
 export default class RankBlock extends Vue {
   @Prop()
-  private rankData!: Array<PropData>; // 原始数据
+  private rankData!: PropData[]; // 原始数据
 
   @Prop()
   private fontColor!: string; // 颜色
@@ -49,19 +49,19 @@ export default class RankBlock extends Vue {
   private blockTit!: string; // 标题
 
   @Prop()
-  private gradientRamp!: Array<string>; // 渐变色
+  private gradientRamp!: string[]; // 渐变色
 
   // 分组数据
-  private groupData: Array<any> = [];
+  private groupData: any[] = [];
 
   // 当前数据
-  private ranking: Array<any> = [];
+  private ranking: any[] = [];
 
   private TimeNum: number | null = null;
   private TimeSubNum: number | null = null;
 
-  @Watch("rankData")
-  onchanged(val: Array<any>, oldVal: Array<any>) {
+  @Watch('rankData')
+  public onchanged(val: any[], oldVal: any[]) {
     if (val.length) {
       if (this.TimeNum) {
         clearTimeout(this.TimeNum);
@@ -79,14 +79,14 @@ export default class RankBlock extends Vue {
   }
 
   // 排行的动画
-  rankAnimation(index: number) {
+  public rankAnimation(index: number) {
     if (this.TimeNum) {
       clearTimeout(this.TimeNum);
       this.TimeNum = null;
     }
 
     // 每组中的数据切换
-    let animationItem = (id: number) => {
+    const animationItem = (id: number) => {
       if (this.TimeSubNum) {
         clearTimeout(this.TimeSubNum);
         this.TimeSubNum = null;
@@ -95,7 +95,9 @@ export default class RankBlock extends Vue {
       this.$set(this.ranking, id, this.groupData[index][id]);
 
       this.TimeSubNum = setTimeout(() => {
-        id < this.groupData[index].length - 1 ? animationItem(++id) : null;
+        if (id < this.groupData[index].length - 1) {
+            animationItem(++id);
+        }
       }, 1200);
     };
 

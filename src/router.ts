@@ -1,8 +1,8 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Login from './views/login/index'
+import Vue from 'vue';
+import Router from 'vue-router';
+import Login from './views/login/index';
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   mode: 'history',
@@ -11,7 +11,7 @@ export default new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
     },
     {
       path: '/layout',
@@ -20,7 +20,7 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () =>
-        import(/* webpackChunkName: "about" */ './views/layout/index.vue')
-    }
-  ]
-})
+        import(/* webpackChunkName: "about" */ './views/layout/index.vue'),
+    },
+  ],
+});

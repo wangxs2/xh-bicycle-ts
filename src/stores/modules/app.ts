@@ -1,12 +1,12 @@
 const app = {
   state: {
-    key: ''
+    key: '',
   },
   mutations: {
     SETKEY(state: any, key: string): void {
-      state.key = key
-    }
-  }
-}
+      state.key = key;
+    },
+  },
+};
 
-export default app
+export default app;

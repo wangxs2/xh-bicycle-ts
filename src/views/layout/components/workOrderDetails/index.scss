@@ -61,8 +61,12 @@
   opacity: 0;
 }
 
+.list-complete-enter {
+  transform: translate3d(0, 100%, 0);
+  position: absolute;
+}
+
 .list-complete-leave-active {
   position: absolute;
   transform: translate3d(0, -100%, 0);
-  opacity: 0;
 }

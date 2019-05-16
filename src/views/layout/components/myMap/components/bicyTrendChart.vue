@@ -1,52 +1,53 @@
 <template>
   <div class="bicy-trend-chart">
-    <div class="trend-close iconfont icon-guanbi"
-         @click="close">
-    </div>
+    <div class="trend-close iconfont icon-guanbi" @click="close"></div>
     <div class="trend-tit">{{params.name}} 数量-活跃率变化</div>
-    <div ref="bicyActiveTrend"
-         class="Chart"></div>
+    <div ref="bicyActiveTrend" class="Chart"></div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch, Emit } from "vue-property-decorator";
-import echarts from "echarts";
+import { Component, Vue, Prop, Watch, Emit } from 'vue-property-decorator';
+import echarts from 'echarts';
 
 interface PropData {
   activeRate: Array<string | number>;
   bicycleNum: Array<string | number>;
-  date: Array<string>;
+  date: string[];
   name: string;
   [propName: string]: any;
 }
 
 @Component
 export default class BicyTrendChart extends Vue {
+  @Prop()
+  public params!: PropData;
   // 图表容器
   private chartNode: any = null;
 
-  @Prop()
-  public params!: PropData;
-
-  mounted() {
+  public mounted() {
     this.initChart();
     this.echartsOption();
+
+    this.$Bus.$on('updateScreen', this.resizeEvent);
   }
 
-  @Watch("params")
-  onchanged(val: PropData, oldVal: PropData) {
+  @Watch('params')
+  public onchanged(val: PropData, oldVal: PropData) {
     this.echartsOption();
   }
 
   // 关闭弹窗 清除数据
   @Emit()
-  close() {}
+  public close() {
+    //
+  }
 
-  beforeDestroy() {
+  public beforeDestroy() {
     this.chartNode.dispose();
     this.chartNode = null;
-    window.removeEventListener("resize", this.resizeEvent);
+    window.removeEventListener('resize', this.resizeEvent);
+    this.$Bus.$off('updateScreen', this.resizeEvent);
   }
 
   // 初始化图表
@@ -54,7 +55,7 @@ export default class BicyTrendChart extends Vue {
     const Cnode: any = this.$refs.bicyActiveTrend;
     this.chartNode = echarts.init(Cnode);
 
-    window.addEventListener("resize", this.resizeEvent);
+    window.addEventListener('resize', this.resizeEvent);
   }
 
   // 事件执行
@@ -66,127 +67,127 @@ export default class BicyTrendChart extends Vue {
   private echartsOption(): void {
     const option = {
       tooltip: {
-        trigger: "axis"
+        trigger: 'axis',
       },
       legend: {
-        data: ["单车数量", "活跃率"],
+        data: ['单车数量', '活跃率'],
         textStyle: {
-          color: "#8FDBFF"
-        }
+          color: '#8FDBFF',
+        },
       },
       grid: {
         top: 30,
-        bottom: 45
+        bottom: 45,
       },
       xAxis: [
         {
-          type: "category",
+          type: 'category',
           axisLine: {
             lineStyle: {
-              color: "#2779FF",
-              opacity: 0.5
-            }
+              color: '#2779FF',
+              opacity: 0.5,
+            },
           },
           axisLabel: {
-            color: "#D1F0FF",
-            rotate: 45
+            color: '#D1F0FF',
+            rotate: 45,
           },
           splitLine: {
-            show: false
+            show: false,
           },
           axisPointer: {
             show: true,
             lineStyle: {
-              color: "#2779FF",
-              opacity: 0.5
-            }
+              color: '#2779FF',
+              opacity: 0.5,
+            },
           },
           data: this.params.date.map(
             (item: string): string => {
               return item.slice(5);
-            }
-          )
-        }
+            },
+          ),
+        },
       ],
       yAxis: [
         {
-          type: "value",
+          type: 'value',
           // min: 0,
           // max: 250,
           minInterval: 1,
-          position: "left",
+          position: 'left',
           axisLine: {
             lineStyle: {
-              color: "#2779FF",
-              opacity: 0.5
-            }
+              color: '#2779FF',
+              opacity: 0.5,
+            },
           },
           axisTick: {
-            show: false
+            show: false,
           },
           splitLine: {
-            show: false
+            show: false,
           },
           axisLabel: {
-            color: "#D1F0FF"
-          }
+            color: '#D1F0FF',
+          },
         },
         {
-          type: "value",
+          type: 'value',
           // min: 0,
           // max: 25,
           minInterval: 1,
-          position: "right",
+          position: 'right',
           axisLine: {
             lineStyle: {
-              color: "#2779FF",
-              opacity: 0.5
-            }
+              color: '#2779FF',
+              opacity: 0.5,
+            },
           },
           axisTick: {
-            show: false
+            show: false,
           },
           splitLine: {
-            show: false
+            show: false,
           },
           axisLabel: {
-            color: "#D1F0FF"
-          }
-        }
+            color: '#D1F0FF',
+          },
+        },
       ],
       series: [
         {
-          name: "单车数量",
-          type: "bar",
+          name: '单车数量',
+          type: 'bar',
           itemStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "#20C0FE" },
-              { offset: 1, color: "#2779FF" }
-            ])
+              { offset: 0, color: '#20C0FE' },
+              { offset: 1, color: '#2779FF' },
+            ]),
           },
-          barWidth: "8px",
-          data: this.params.bicycleNum
+          barWidth: '8px',
+          data: this.params.bicycleNum,
         },
         {
-          name: "活跃率",
-          type: "line",
+          name: '活跃率',
+          type: 'line',
           yAxisIndex: 1,
           lineStyle: {
             width: 2,
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: "#FF8234" },
-              { offset: 1, color: "#F1D251" }
-            ])
+              { offset: 0, color: '#FF8234' },
+              { offset: 1, color: '#F1D251' },
+            ]),
           },
           smooth: true,
           showSymbol: false,
           hoverAnimation: true,
           itemStyle: {
-            color: "#F1D251"
+            color: '#F1D251',
           },
-          data: this.params.activeRate
-        }
-      ]
+          data: this.params.activeRate,
+        },
+      ],
     };
 
     this.chartNode.setOption(option, true);
@@ -197,36 +198,36 @@ export default class BicyTrendChart extends Vue {
 
 <style lang="scss" scoped>
 .bicy-trend-chart {
-  width: vw(327);
-  height: vw(184);
+  @include vw2(width, 327);
+  @include vw2(height, 184);
   position: absolute;
-  top: vh(12);
-  left: vw(10);
+  @include vh2(top, 12);
+  @include vw2(left, 10);
   background: rgba(11, 28, 61, 0.7);
   border: 1px solid rgba(153, 204, 255, 0.25);
   .trend-close {
     position: absolute;
-    right: vw(10);
-    top: vw(10);
-    width: vw(9);
-    height: vw(9);
+    @include vw2(right, 10);
+    @include vw2(top, 10);
+    @include vw2(width, 9);
+    @include vw2(height, 9);
     text-align: center;
-    line-height: vw(9);
-    font-size: vw(9);
+    @include vw2(line-height, 9);
+    @include vw2(font-size, 9);
     cursor: pointer;
     color: #fff;
   }
   .trend-tit {
-    font-size: vw(9);
+    @include vw2(font-size, 9);
     color: #fff;
     text-align: center;
-    padding-top: vw(10);
+    @include vw2(padding-top, 10);
     box-sizing: border-box;
     line-height: 1;
   }
   .Chart {
+    @include vw2(height, 165);
     width: 100%;
-    height: vw(165);
   }
 }
 </style>

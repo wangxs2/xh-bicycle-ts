@@ -1,22 +1,22 @@
-import mathjs from 'mathjs'
+import mathjs from 'mathjs';
 
 /**
  * 格式化数字（每三位加逗号）
  * @param {Number,Str}
  * @return {Str}
  */
-export const toThousands = (n: number | String): string => {
-  let num: string = (n || 0).toString(),
-    result: string = ''
+export const toThousands = (n: number | string): string => {
+  let num: string = (n || 0).toString();
+  let result: string = '';
   while (num.length > 3) {
-    result = ',' + num.slice(-3) + result
-    num = num.slice(0, num.length - 3)
+    result = ',' + num.slice(-3) + result;
+    num = num.slice(0, num.length - 3);
   }
   if (num) {
-    result = num + result
+    result = num + result;
   }
-  return result
-}
+  return result;
+};
 
 /**
  * @method 数组等分
@@ -25,16 +25,16 @@ export const toThousands = (n: number | String): string => {
  * @return {Array}
  */
 export const arrGroup = (
-  array: Array<any>,
-  subGroupLength: number
-): Array<any> => {
-  let index: number = 0
-  let newArray: Array<any> = []
+  array: any[],
+  subGroupLength: number,
+): any[] => {
+  let index: number = 0;
+  const newArray: any[] = [];
   while (index < array.length) {
-    newArray.push(array.slice(index, (index += subGroupLength)))
+    newArray.push(array.slice(index, (index += subGroupLength)));
   }
-  return newArray
-}
+  return newArray;
+};
 
 /**
  * @method 精确计算
@@ -43,111 +43,111 @@ export const arrGroup = (
  * @return {number}
  */
 export const refinedCal = (ex: string, round: number): any => {
-  const precision: number = 14
-  let ev: number = mathjs.eval(ex)
-  let result
+  const precision: number = 14;
+  const ev: number = mathjs.eval(ex);
+  let result;
 
   if (round >= 0) {
-    result = mathjs.round(ev, round)
+    result = mathjs.round(ev, round);
   } else {
-    result = mathjs.format(ev, precision)
+    result = mathjs.format(ev, precision);
   }
 
-  return result
-}
+  return result;
+};
 
 /**
  * @method 数据类型判断
  * @param {any} 数据
  * @return {string}
  */
-export const judgeType: Function = (n: any): string => {
-  const typeStr: any = Object.prototype.toString.call(n)
-  let typeName: string = ''
+export const judgeType = (n: any): string => {
+  const typeStr: any = Object.prototype.toString.call(n);
+  let typeName: string = '';
   switch (typeStr) {
     case '[object String]':
-      typeName = 'string'
-      break
+      typeName = 'string';
+      break;
     case '[object Number]':
-      typeName = 'number'
-      break
+      typeName = 'number';
+      break;
     case '[object Boolean]':
-      typeName = 'boolean'
-      break
+      typeName = 'boolean';
+      break;
     case '[object Undefined]':
-      typeName = 'undefined'
-      break
+      typeName = 'undefined';
+      break;
     case '[object Object]':
-      typeName = 'object'
-      break
+      typeName = 'object';
+      break;
     case '[object Array]':
-      typeName = 'array'
-      break
+      typeName = 'array';
+      break;
     case '[object Null]':
-      typeName = 'null'
-      break
+      typeName = 'null';
+      break;
     case '[object RegExp]':
-      typeName = 'RegExp'
-      break
+      typeName = 'RegExp';
+      break;
     case '[object Symbol]':
-      typeName = 'symbol'
-      break
+      typeName = 'symbol';
+      break;
     case '[object JSON]':
-      typeName = 'json'
-      break
+      typeName = 'json';
+      break;
     case '[object Math]':
-      typeName = 'math'
-      break
+      typeName = 'math';
+      break;
     default:
-      typeName = 'object'
+      typeName = 'object';
   }
 
-  return typeName
-}
+  return typeName;
+};
 
 /**
  * @method 拷贝
  * @param {any} 数据
  * @return {any}
  */
-export const cloneObj: Function = (obj: any) => {
-  let str: string
-  let newobj: any = obj.constructor === Array ? [] : {}
+export const cloneObj = (obj: any) => {
+  let str: string;
+  let newobj: any = obj.constructor === Array ? [] : {};
 
   if (typeof obj !== 'object') {
-    return obj
+    return obj;
   } else if (JSON) {
-    str = JSON.stringify(obj)
-    newobj = JSON.parse(str)
+    str = JSON.stringify(obj);
+    newobj = JSON.parse(str);
   } else {
-    for (let i in obj) {
-      newobj[i] = typeof obj[i] === 'object' ? cloneObj(obj[i]) : obj[i]
+    for (const i of Object.keys(obj)) {
+      newobj[i] = typeof obj[i] === 'object' ? cloneObj(obj[i]) : obj[i];
     }
   }
-  return newobj
-}
+  return newobj;
+};
 
 /**
  * @method 事件委托
  * @param {any} 数据
  * @return {any}
  */
-export const eventDelegate: Function = (
+export const eventDelegate = (
   parentSelector: string,
   targetSelector: string,
   events: string,
-  foo: Function
+  foo: any,
 ) => {
   // 触发执行的函数
   function triFunction(e: any): void {
     // 兼容性处理
-    var event = e || window.event
+    const event = e;
 
     // 获取到目标阶段指向的元素
-    var target = event.target || event.srcElement
+    let target = event.target || event.srcElement;
 
     // 获取到代理事件的函数
-    var currentTarget = event.currentTarget
+    const currentTarget = event.currentTarget;
 
     // 处理 matches 的兼容性
     if (!Element.prototype.matches) {
@@ -156,29 +156,29 @@ export const eventDelegate: Function = (
         (Element as any).prototype.mozMatchesSelector ||
         (Element as any).prototype.msMatchesSelector ||
         (Element as any).prototype.oMatchesSelector ||
-        (Element as any).prototype.webkitMatchesSelector
+        (Element as any).prototype.webkitMatchesSelector;
     }
 
     // 遍历外层并且匹配
     while (target !== currentTarget) {
       // 判断是否匹配到我们所需要的元素上
       if (target.matches(targetSelector)) {
-        var sTarget = target
+        const sTarget = target;
         // 执行绑定的函数，注意 this
-        foo.call(sTarget, Array.prototype.slice.call(arguments))
+        foo.call(sTarget, Array.prototype.slice.call(arguments));
       }
 
-      target = target.parentNode
+      target = target.parentNode;
     }
   }
 
   // 如果有多个事件的话需要全部一一绑定事件
-  events.split('.').forEach(function(evt) {
+  events.split('.').forEach((evt) => {
     // 多个父层元素的话也需要一一绑定
     Array.prototype.slice
       .call(document.querySelectorAll(parentSelector))
-      .forEach(function($p) {
-        $p.addEventListener(evt, triFunction)
-      })
-  })
-}
+      .forEach(($p) => {
+        $p.addEventListener(evt, triFunction);
+      });
+  });
+};

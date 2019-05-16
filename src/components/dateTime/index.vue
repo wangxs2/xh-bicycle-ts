@@ -9,31 +9,31 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import moment from "moment";
-moment.locale("zh-cn");
+import { Component, Vue } from 'vue-property-decorator';
+import moment from 'moment';
+moment.locale('zh-cn');
 
 @Component
 export default class DateTime extends Vue {
-  timeDate: object = {};
-  clearTime: any = null;
+  public timeDate: object = {};
+  public clearTime: any = null;
 
-  created() {
+  public created() {
     this.setTime();
   }
 
-  setTime(): void {
+  public setTime(): void {
     if (this.clearTime) {
       clearTimeout(this.clearTime);
     }
     const nowDate = moment();
-    const date = nowDate.format("MM-DD HH:mm:ss").split(" ");
-    const week = nowDate.format("dddd");
+    const date = nowDate.format('MM-DD HH:mm:ss').split(' ');
+    const week = nowDate.format('dddd');
 
     this.timeDate = {
       time: date[1],
       date: date[0],
-      week: week
+      week,
     };
 
     this.clearTime = setTimeout(() => {

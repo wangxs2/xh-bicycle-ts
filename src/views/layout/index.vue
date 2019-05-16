@@ -119,22 +119,22 @@
 </template>
 
 <script lang="ts">
-import pageTop from "./components/top/index";
-import borderBlock from "@/components/borderBlock/index.vue";
-import bikeNum from "./components/bikeNum/index";
-import rankBlock from "@/components/rankBlock/index.vue";
-import workOrderDetails from "./components/workOrderDetails/index";
-import myMap from "./components/myMap/index";
-import orderSituation from "./components/ordersituation/index";
-import workDispose from "./components/workDispose/index";
-import command from "./components/command/index";
+import pageTop from './components/top/index';
+import borderBlock from '@/components/borderBlock/index.vue';
+import bikeNum from './components/bikeNum/index';
+import rankBlock from '@/components/rankBlock/index.vue';
+import workOrderDetails from './components/workOrderDetails/index';
+import myMap from './components/myMap/index';
+import orderSituation from './components/ordersituation/index';
+import workDispose from './components/workDispose/index';
+import command from './components/command/index';
 
-import { Component, Vue } from "vue-property-decorator";
-import API from "@/api/index";
-import { refinedCal, cloneObj } from "@/libs/util.ts";
-import moment from "moment";
+import { Component, Vue } from 'vue-property-decorator';
+import API from '@/api/index';
+import { refinedCal, cloneObj } from '@/libs/util.ts';
+import moment from 'moment';
 
-moment.locale("zh-cn");
+moment.locale('zh-cn');
 
 @Component({
   components: {
@@ -146,8 +146,8 @@ moment.locale("zh-cn");
     myMap,
     orderSituation,
     workDispose,
-    command
-  }
+    command,
+  },
 })
 export default class Layout extends Vue {
   // 重点区排名数据
@@ -159,7 +159,7 @@ export default class Layout extends Vue {
   // 街镇数据
   private townData: Array<{}> = [];
 
-  created() {
+  public created() {
     this.getKeyArea();
     this.getPeakRanking();
   }
@@ -174,15 +174,15 @@ export default class Layout extends Vue {
 
           this.activeRange = res.activeRange.map(
             (item: any, index: number): object => {
-              item.percentage = refinedCal(`${item.activeRate}*100`, -1) + "%";
+              item.percentage = refinedCal(`${item.activeRate}*100`, -1) + '%';
               item.index = index + 1;
               item.name = item.orgName;
               item.describe = item.percentage;
               return item;
-            }
+            },
           );
         }
-      }
+      },
     );
   }
 
@@ -190,56 +190,56 @@ export default class Layout extends Vue {
   private getPeakRanking(): void {
     // 昨天
     const yesterday = moment()
-      .subtract(1, "days")
-      .format("YYYY-MM-DD");
+      .subtract(1, 'days')
+      .format('YYYY-MM-DD');
 
     // const yesterday = "2019-03-22";
 
     // 重点区域 早高峰
-    const morningStartTime = yesterday + " 08:30:00";
-    const morningEndTime = yesterday + " 09:30:00";
+    const morningStartTime = yesterday + ' 08:30:00';
+    const morningEndTime = yesterday + ' 09:30:00';
     API.getPeak(morningStartTime, morningEndTime).then(
       (res: any): void => {
         if (res.data.length) {
           this.disPeak(res.data, 1);
         }
-      }
+      },
     );
 
     // 重点区域 晚高峰
-    const eveningStartTime = yesterday + " 17:30:00";
-    const eveningEndTime = yesterday + " 18:30:00";
+    const eveningStartTime = yesterday + ' 17:30:00';
+    const eveningEndTime = yesterday + ' 18:30:00';
     API.getPeak(eveningStartTime, eveningEndTime).then(
       (res: any): void => {
         if (res.data.length) {
           this.disPeak(res.data, 2);
         }
-      }
+      },
     );
   }
 
   // 处理早晚高峰数据
   private disPeak(data: Array<{}>, type: number): void {
     // TOP10
-    const topData: Array<any> = data.slice(0, 10);
+    const topData: any[] = data.slice(0, 10);
 
     // 最大数
     const maxBikeNum: string | number = topData[0].bicycleNum;
 
     // 比例计算
-    let percentage: string | number = "";
+    let percentage: string | number = '';
 
     const typeData: Array<{}> = topData.map(
       (item: any, index: number): object => {
         percentage = refinedCal(`(${item.bicycleNum}/${maxBikeNum})*100`, 2);
 
-        item.percentage = percentage + "%";
+        item.percentage = percentage + '%';
         item.index = index + 1;
         item.name = item.regionName;
-        item.describe = item.bicycleNum + "辆";
+        item.describe = item.bicycleNum + '辆';
 
         return item;
-      }
+      },
     );
 
     if (type === 1) {

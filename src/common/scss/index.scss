@@ -11,6 +11,27 @@ $vh_base: 540;
   @return ($px / $vh_base) * 100vh;
 }
 
+@mixin vw2($style,$px) {
+  [data-theme='default'] & {
+    #{$style}: vw($px)
+  }
+  
+  [data-theme='mapFull'] & {
+    #{$style}: vw($px * 2)
+  }
+}
+
+@mixin vh2($style,$px) {
+  [data-theme='default'] & {
+    #{$style}: vh($px)
+  }
+  
+  [data-theme='mapFull'] & {
+    #{$style}: vh($px * 2)
+  }
+}
+
+
 // 动画
 .fade-enter-active,
 .fade-leave-active {

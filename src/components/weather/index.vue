@@ -15,35 +15,35 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import API from "@/api/index.ts";
+import { Component, Vue } from 'vue-property-decorator';
+import API from '@/api/index.ts';
 
 @Component
 export default class Weather extends Vue {
-  weatherData: object = {};
+  public weatherData: object = {};
 
-  created() {
+  public created() {
     this.getWeather();
   }
 
   /**
    * 请求数据
    */
-  getWeather(): void {
+  public getWeather(): void {
     API.getWeather().then((res: any) => {
-      if (res.message === "success") {
-        let aqi = res.data.en.quality ? res.data.en.quality : "良";
-        let thisWeather = res.data.forcast[0];
+      if (res.message === 'success') {
+        const aqi = res.data.en.quality ? res.data.en.quality : '良';
+        const thisWeather = res.data.forcast[0];
         // 是否白天
-        let timeType =
-          new Date(res.data.update_time).getHours() < 17 ? "day" : "night";
-        let desc = thisWeather[timeType].type;
+        const timeType =
+          new Date(res.data.update_time).getHours() < 17 ? 'day' : 'night';
+        const desc = thisWeather[timeType].type;
         this.weatherData = {
           aqi,
           img: require(`@img/weather/${desc}.png`),
           low_temp: thisWeather.low_temp.slice(0, -1),
           high_temp: thisWeather.high_temp.slice(0, -1),
-          desc
+          desc,
         };
       }
     });

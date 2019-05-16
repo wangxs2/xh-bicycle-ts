@@ -1,9 +1,9 @@
-import http from '@/libs/http'
+import http from '@/libs/http';
 
 const getKey = () => {
   // return store.state.key
-  return sessionStorage.getItem('KEY')
-}
+  return sessionStorage.getItem('KEY');
+};
 
 export default {
   /**
@@ -16,24 +16,24 @@ export default {
       {
         params: {
           cityName: '上海',
-          en: 1
-        }
-      }
-    )
+          en: 1,
+        },
+      },
+    );
   },
 
   /**
    * 获取共享单车投放量/周活跃量、各单车企业投放量/各单车企业单车周活跃量
    */
   getOrgBike(): Promise<{}> {
-    return http('bicycleTotal/findOrgBikeTotalAndActiveNum/' + getKey())
+    return http('bicycleTotal/findOrgBikeTotalAndActiveNum/' + getKey());
   },
 
   /**
    * 获取重点区域的活跃度
    */
   getKeyArea(): Promise<{}> {
-    return http('position/findChildOrgActiveRange/' + getKey())
+    return http('position/findChildOrgActiveRange/' + getKey());
   },
 
   /**
@@ -45,9 +45,9 @@ export default {
     return http('kpHour/calOrgKeyRegionHotBicycleNum/' + getKey(), {
       params: {
         startTime,
-        endTime
-      }
-    })
+        endTime,
+      },
+    });
   },
 
   /**
@@ -59,23 +59,23 @@ export default {
     return http('bikeDispatch/dispatchList/' + getKey(), {
       params: {
         beginDay,
-        endDay
-      }
-    })
+        endDay,
+      },
+    });
   },
 
   /**
    * 获取区域边界及中心点坐标（高德坐标）
    */
   getDistrictBoundary(): Promise<{}> {
-    return http('boundary/findOrgBoundary/' + getKey())
+    return http('boundary/findOrgBoundary/' + getKey());
   },
 
   /**
    * 获取街镇边界及中心点坐标
    */
   getAreaBoundary(): Promise<{}> {
-    return http('boundary/findOrgChildBoundary/' + getKey())
+    return http('boundary/findOrgChildBoundary/' + getKey());
   },
 
   /**
@@ -84,9 +84,9 @@ export default {
   getBicyClePosition(companyCode: string = ''): Promise<{}> {
     return http('position/findAllOrgBikeHotGraph/' + getKey(), {
       params: {
-        companyCode
-      }
-    })
+        companyCode,
+      },
+    });
   },
 
   /**
@@ -95,9 +95,9 @@ export default {
   getBicyActiveCurve(companyCode: string = ''): Promise<{}> {
     return http('position/findOrgBicycleNumActiveChange/' + getKey(), {
       params: {
-        companyCode
-      }
-    })
+        companyCode,
+      },
+    });
   },
 
   /**
@@ -109,16 +109,16 @@ export default {
     startDate: string,
     endDate: string,
     type: string = '',
-    sheetStatus: string = ''
+    sheetStatus: string = '',
   ): Promise<{}> {
     return http('bikeDispatch/findBikeDispatchByAreaIdAndDate/' + getKey(), {
       params: {
         startDate,
         endDate,
         type,
-        sheetStatus
-      }
-    })
+        sheetStatus,
+      },
+    });
   },
 
   /**
@@ -128,9 +128,9 @@ export default {
   getWorkOrder(): Promise<{}> {
     return http('bikeDispatch/countRecentWeek/' + getKey(), {
       params: {
-        countType: 'week'
-      }
-    })
+        countType: 'week',
+      },
+    });
   },
 
   /**
@@ -139,16 +139,16 @@ export default {
   getRoughHandling(): Promise<{}> {
     return http('bikeDispatch/dealRateRecentWeek/' + getKey(), {
       params: {
-        countType: 'week'
-      }
-    })
+        countType: 'week',
+      },
+    });
   },
 
   /**
    * 获取蓝牙设备
    */
   getBleContainStatus(): Promise<{}> {
-    return http('ble/findOrgAllBleContainStatus/' + getKey())
+    return http('ble/findOrgAllBleContainStatus/' + getKey());
   },
 
   /**
@@ -156,8 +156,8 @@ export default {
    */
   getBleCompanyTrend(params: any): Promise<{}> {
     return http('ble/findBleCompanyNumList/' + getKey(), {
-      params
-    })
+      params,
+    });
   },
 
   /**
@@ -165,15 +165,15 @@ export default {
    */
   getBleCompanyNum(params: any): Promise<{}> {
     return http('ble/staticsBleCheckNumContainPerCompany/' + getKey(), {
-      params
-    })
+      params,
+    });
   },
 
   /**
    * 获取人员位置信息 http://10.1.4.72:8090/sharebikesclean/personPosition/getUserPositionMsg?UouLaDG9Dt931%7CVrNZp2nQ%3D%3D
    */
   getUserPositionMsg(): Promise<{}> {
-    return http('personPosition/getUserPositionMsg/' + getKey())
+    return http('personPosition/getUserPositionMsg/' + getKey());
   },
 
   /**
@@ -181,8 +181,8 @@ export default {
    */
   getBikeDetailInfo(params: any): Promise<{}> {
     return http('ble/findBleCheckBikeDetailInfo/' + getKey(), {
-      params
-    })
+      params,
+    });
   },
 
   /**
@@ -190,8 +190,8 @@ export default {
    */
   getBadBikeInfo(params: any): Promise<{}> {
     return http('ble/findCompanyAbandonAnalysisResult/' + getKey(), {
-      params
-    })
+      params,
+    });
   },
 
   /**
@@ -199,7 +199,16 @@ export default {
    */
   getWaring(params: any): Promise<{}> {
     return http('position/findOrgWaringAndClearInfo/' + getKey(), {
-      params
-    })
-  }
-}
+      params,
+    });
+  },
+
+  /**
+   * 获取禁停区数据
+   */
+  getForbid(params: any): Promise<{}> {
+    return http('boundary/findOrgJtRegionBoundaryAndBikeNum/' + getKey(), {
+      params,
+    });
+  },
+};

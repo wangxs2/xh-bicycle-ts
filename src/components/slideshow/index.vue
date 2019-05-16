@@ -20,16 +20,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Vue } from "vue-property-decorator";
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 
-import Swiper from "swiper";
-import "swiper/dist/css/swiper.min.css";
+import Swiper from 'swiper';
+import 'swiper/dist/css/swiper.min.css';
 
 @Component
 export default class Slideshow extends Vue {
   private swiperNode: any = {}; // swiper对象
-  private isShowPagination: boolean = false; //是否显示分页器
-  private isShowNavigation: boolean = false; //是否显示导航按钮
+  private isShowPagination: boolean = false; // 是否显示分页器
+  private isShowNavigation: boolean = false; // 是否显示导航按钮
 
   @Prop()
   private parendClassName!: string; // 父元素的类名
@@ -44,14 +44,14 @@ export default class Slideshow extends Vue {
   //   }
   // }
 
-  beforeDestroy() {
+  public beforeDestroy() {
     if (this.swiperNode) {
       this.swiperNode.destroy();
       this.swiperNode = null;
     }
   }
 
-  created() {
+  public created() {
     if (this.options.pagination && this.options.$isPage) {
       this.isShowPagination = true;
     }
@@ -60,14 +60,14 @@ export default class Slideshow extends Vue {
     }
   }
 
-  mounted() {
+  public mounted() {
     this.initSwiper();
   }
 
-  initSwiper(): void {
+  public initSwiper(): void {
     this.swiperNode = new Swiper(
       `.${this.parendClassName} .swiper-container`,
-      this.options
+      this.options,
     );
   }
 }

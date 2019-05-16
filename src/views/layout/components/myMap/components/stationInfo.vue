@@ -56,37 +56,39 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit } from "vue-property-decorator";
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
 
 @Component({
   filters: {
     formatType(value: number): string {
-      let type: string = "--";
+      let type: string = '--';
       if (value === 0) {
-        type = "地埋式蓝牙嗅探设备";
+        type = '地埋式蓝牙嗅探设备';
       } else if (value === 1) {
-        type = "抱杆式蓝牙嗅探设备";
+        type = '抱杆式蓝牙嗅探设备';
       }
       return type;
     },
     waterType(value: number): string {
-      let type: string = "--";
+      let type: string = '--';
       if (value === 0) {
-        type = "否";
+        type = '否';
       } else if (value === 1) {
-        type = "是";
+        type = '是';
       }
       return type;
-    }
-  }
+    },
+  },
 })
 export default class Stationinfo extends Vue {
   @Prop()
   public params!: any;
 
   // 关闭弹窗 清除数据
-  @Emit("close")
-  close(): void {}
+  @Emit('close')
+  public close(): void {
+    //
+  }
 }
 </script>
 
@@ -94,9 +96,9 @@ export default class Stationinfo extends Vue {
 <style lang="scss" scoped>
 .station-info {
   position: absolute;
-  top: vh(74);
-  left: vw(533);
-  width: vw(214);
+  @include vw2(top, 74);
+  @include vw2(left, 533);
+  @include vw2(width, 214);
   background: rgba(11, 28, 61, 0.7);
   border: 1px solid rgba(153, 204, 255, 0.25);
   padding: vw(10) vw(6);
@@ -104,21 +106,22 @@ export default class Stationinfo extends Vue {
   box-sizing: border-box;
   .info-close {
     position: absolute;
-    right: vw(10);
-    top: vw(10);
-    width: vw(9);
-    height: vw(9);
+    @include vw2(right, 10);
+    @include vw2(top, 10);
+    @include vw2(width, 9);
+    @include vw2(height, 9);
     text-align: center;
-    line-height: vw(9);
-    font-size: vw(10);
+    @include vw2(line-height, 9);
+    @include vw2(font-size, 10);
     cursor: pointer;
     color: #fff;
   }
   .info-tit {
     color: #fff;
-    font-size: vw(10);
+    @include vw2(font-size, 10);
     text-align: center;
-    padding: vw(10) 0;
+    @include vw2(padding-top, 10);
+    @include vw2(padding-bottom, 10);
     box-sizing: border-box;
   }
   .tab {
@@ -126,21 +129,21 @@ export default class Stationinfo extends Vue {
     border: 1px solid rgba(32, 85, 164, 1);
     padding: 0;
     margin: 0;
-    font-size: vw(8);
+    @include vw2(font-size, 8);
     color: #bbb;
     li {
       margin: 0;
       list-style: none;
-      padding: vw(6);
+      @include vw2(padding, 6);
       box-sizing: border-box;
       border-bottom: 1px solid rgba(32, 85, 164, 1);
       display: flex;
       .label {
-        width: vw(70);
-        letter-spacing: vw(3.4);
+        @include vw2(width, 70);
+        @include vw2(letter-spacing, 3.4);
         color: #fff;
         &.text-spacing {
-          letter-spacing: vw(1.1);
+          @include vw2(letter-spacing, 1.1);
         }
       }
       .value {

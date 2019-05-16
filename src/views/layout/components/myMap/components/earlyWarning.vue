@@ -129,37 +129,37 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit } from "vue-property-decorator";
-import API from "@/api/index.ts";
-import moment, { now } from "moment";
-import { refinedCal } from "@/libs/util.ts";
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
+import API from '@/api/index.ts';
+import moment, { now } from 'moment';
+import { refinedCal } from '@/libs/util.ts';
 
-moment.locale("zh-cn");
+moment.locale('zh-cn');
 
 @Component({
   directives: {
-    state: function(el, binding) {
+    state(el, binding) {
       const value = binding.value;
       switch (value) {
         case 0:
-          el.innerText = "下限预警";
-          el.style.background = "#ff6d10";
+          el.innerText = '下限预警';
+          el.style.background = '#ff6d10';
           break;
         case 1:
-          el.innerText = "上限预警";
-          el.style.background = "#fe4a5d";
+          el.innerText = '上限预警';
+          el.style.background = '#fe4a5d';
           break;
         case -1:
-          el.innerText = "预警解除";
-          el.style.background = "#8094dd";
+          el.innerText = '预警解除';
+          el.style.background = '#8094dd';
           break;
       }
-    }
+    },
   },
   filters: {
     // 格式预警消息
-    waringInfo: function(data: any, type?: number): string {
-      let str: string = "";
+    waringInfo(data: any, type?: number): string {
+      let str: string = '';
       if (type === undefined) {
         if (data.waringType === 0) {
           // 下限
@@ -186,18 +186,18 @@ moment.locale("zh-cn");
         }
       }
       return str;
-    }
-  }
+    },
+  },
 })
 export default class EarlyWarning extends Vue {
   // 实时预警
-  public EarlyWarnData: Array<any> = [];
+  public EarlyWarnData: any[] = [];
 
   // 历史预警
-  public ClearEarly: Array<any> = [];
+  public ClearEarly: any[] = [];
 
   // 定时器
-  public clearTime: Array<any> = [];
+  public clearTime: any[] = [];
 
   // 是否显示预警原则
   public isPrinciple: boolean = false;
@@ -208,28 +208,28 @@ export default class EarlyWarning extends Vue {
   // 是否显示详情数据
   public isDetails: boolean = false;
 
-  mounted() {
+  public mounted() {
     this.getWaring();
   }
 
-  beforeDestroy() {
+  public beforeDestroy() {
     clearTimeout(this.clearTime[0]);
     clearTimeout(this.clearTime[1]);
   }
 
   public getWaring(): void {
+    const nowTime: string = moment().format('YYYY-MM-DD');
     API.getWaring({
-      startTime: "2019-04-30 00:00:00",
-      endTime: "2019-04-30 23:59:59"
+      startTime: nowTime + ' 00:00:00',
+      endTime: nowTime + ' 23:59:59',
     }).then(
       (res: any): void => {
-        console.log(res);
         this.EarlyWarnData = res.orgEarlyWaringInfo.map((item: any) => {
           item.index = now() + Math.random();
           item.activeRate = refinedCal(`${item.activeRate}*100`, 2);
           item.activeRateThreshold = refinedCal(
             `${item.activeRateThreshold}*100`,
-            2
+            2,
           );
           return item;
         });
@@ -239,11 +239,11 @@ export default class EarlyWarning extends Vue {
           item.activeRate = refinedCal(`${item.activeRate}*100`, 2);
           item.clearWaringActiveRate = refinedCal(
             `${item.clearWaringActiveRate}*100`,
-            2
+            2,
           );
           item.activeRateThreshold = refinedCal(
             `${item.activeRateThreshold}*100`,
-            2
+            2,
           );
           return item;
         });
@@ -255,7 +255,7 @@ export default class EarlyWarning extends Vue {
         if (this.ClearEarly.length >= 2) {
           this.Animation(1);
         }
-      }
+      },
     );
   }
 
@@ -268,25 +268,25 @@ export default class EarlyWarning extends Vue {
     const activeRate: number =
       type === 0 ? data.activeRate : data.clearWaringActiveRate;
 
-    let details2: string = "";
-    let details3: string = "";
+    let details2: string = '';
+    let details3: string = '';
 
     if (type === 0) {
       if (data.waringType === 0) {
         details2 = `低于泊位阀值${data.parkNum}辆，并活跃率高于${
           data.activeRateThreshold
         }%`;
-        details3 = "建议企业增加投放";
+        details3 = '建议企业增加投放';
       } else {
         details2 = `高于泊位阀值${data.parkNum}辆，并活跃率低于${
           data.activeRateThreshold
         }%`;
-        details3 = "已通知企业加强巡查和清运";
+        details3 = '已通知企业加强巡查和清运';
       }
     } else {
       const saturability: number = refinedCal(
         `${data.clearWaringBicycleNum}/${data.parkNum}*100`,
-        2
+        2,
       );
       if (data.waringType === 0) {
         if (saturability <= 60 && data.clearWaringActiveRate < 25) {
@@ -300,7 +300,7 @@ export default class EarlyWarning extends Vue {
           details2 = `高于下限预警泊位阀值60%`;
           // details2 = `高于下限预警泊位阀值${saturability}%`;
         }
-        details3 = "下限预警已解除";
+        details3 = '下限预警已解除';
       } else {
         if (saturability >= 100 && data.clearWaringActiveRate > 45) {
           details2 = `高于上限预警泊位阀值100%，并活跃率高于${
@@ -313,7 +313,7 @@ export default class EarlyWarning extends Vue {
           details2 = `高于上限预警泊位阀值60%，并低于上限预警泊位阀值100%`;
           // details2 = `高于上限预警泊位阀值${saturability}%，并低于上限预警泊位阀值100%`;
         }
-        details3 = "上限预警已解除";
+        details3 = '上限预警已解除';
       }
     }
 
@@ -322,7 +322,7 @@ export default class EarlyWarning extends Vue {
       time: type === 0 ? data.waringTime : data.clearWaringTime,
       details1: `${data.orgName}有车辆${bicycleNum}辆，活跃率为${activeRate}%`,
       details2,
-      details3
+      details3,
     };
 
     this.isDetails = true;
@@ -331,9 +331,9 @@ export default class EarlyWarning extends Vue {
   // 动画 0实时预警 1历史预警
   public Animation(type: number): void {
     let first: any;
-    let data: any = type === 0 ? this.EarlyWarnData : this.ClearEarly;
+    const data: any = type === 0 ? this.EarlyWarnData : this.ClearEarly;
 
-    let animation = (): void => {
+    const animation = (): void => {
       if (this.clearTime[type]) {
         clearTimeout(this.clearTime[type]);
       }
@@ -355,55 +355,55 @@ export default class EarlyWarning extends Vue {
 <style lang="scss" scoped>
 .early-warning {
   position: absolute;
-  right: vw(10);
-  bottom: vw(10);
-  width: vw(560);
+  @include vw2(right, 10);
+  @include vw2(bottom, 10);
+  @include vw2(width, 560);
   background: rgba(11, 28, 61, 0.7);
   border: 1px solid rgba(153, 204, 255, 0.25);
   .warning-tit {
     width: 100%;
-    height: vw(24);
+    @include vw2(height, 24);
     border-bottom: 1px solid rgba(153, 204, 255, 0.25);
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: vw(10);
+    @include vw2(font-size, 10);
     font-family: MicrosoftYaHei;
     font-weight: bold;
     color: #fff;
     position: relative;
     .warning-tenet-btn {
-      width: vw(46);
-      height: vw(16);
+      @include vw2(width, 46);
+      @include vw2(height, 16);
       border: 1px solid #ffff50;
       border-radius: 2px;
       color: #ffff50;
       text-align: center;
-      line-height: vw(14);
+      @include vw2(line-height, 14);
       position: absolute;
-      right: vw(10);
+      @include vw2(right, 10);
       cursor: pointer;
     }
   }
   .warning-body {
     width: 100%;
-    height: vw(104);
+    @include vw2(height, 104);
     color: #fff;
-    font-size: vw(10);
+    @include vw2(font-size, 10);
     .warning-box {
       width: 100%;
-      height: vw(52);
+      @include vw2(height, 52);
       display: flex;
       padding: vw(9) vw(10);
       &:first-of-type {
         border-bottom: 1px solid rgba(153, 204, 255, 0.25);
       }
       .warning-lable {
-        line-height: vw(34);
+        @include vw2(line-height, 34);
         text-align: center;
-        padding-right: vw(10);
+        @include vw2(padding-right, 10);
         border-right: 1px solid rgba(153, 204, 255, 0.25);
-        margin-right: vw(10);
+        @include vw2(margin-right, 10);
       }
       .warning-content {
         width: 1px;
@@ -419,20 +419,20 @@ export default class EarlyWarning extends Vue {
           width: 100%;
           display: flex;
           align-items: center;
-          margin-bottom: vw(5);
+          @include vw2(margin-bottom, 5);
           &:last-of-type {
             margin: 0;
           }
           .item-lable {
-            width: vw(40);
-            height: vw(14);
+            @include vw2(width, 40);
+            @include vw2(height, 14);
             border-radius: 2px;
-            font-size: vw(8);
+            @include vw2(font-size, 8);
             background: #ff6d10;
             color: #fff;
             text-align: center;
-            line-height: vw(14);
-            margin-right: vw(10);
+            @include vw2(line-height, 14);
+            @include vw2(margin-right, 10);
           }
           .item-des {
             line-height: 1;
@@ -445,22 +445,22 @@ export default class EarlyWarning extends Vue {
   .warning-tenet {
     position: absolute;
     left: -1px;
-    bottom: vw(135);
-    width: vw(272);
-    height: vw(156);
+    @include vw2(bottom, 135);
+    @include vw2(width, 272);
+    @include vw2(height, 156);
     background: rgba(11, 28, 61, 0.7);
     border: 1px solid rgba(153, 204, 255, 0.25);
     padding: vw(7) vw(6);
     .tenet-tit {
       text-align: center;
-      font-size: vw(9);
+      @include vw2(font-size, 9);
       color: #ffff50;
     }
     table {
-      margin-top: vw(8);
-      margin-bottom: vw(6);
+      @include vw2(margin-top, 8);
+      @include vw2(margin-bottom, 6);
       width: 100%;
-      font-size: vw(8);
+      @include vw2(font-size, 8);
       color: #fff;
       border-top: 1px solid #607391;
       border-left: 1px solid #607391;
@@ -468,57 +468,57 @@ export default class EarlyWarning extends Vue {
         border-right: 1px solid #607391;
         border-bottom: 1px solid #607391;
         text-align: center;
-        line-height: vw(16);
+        @include vw2(line-height, 16);
       }
       .color-lump {
-        width: vw(32);
+        @include vw2(width, 32);
         // height: vw(12);
         border-radius: 2px;
         text-align: center;
-        line-height: vw(12);
+        @include vw2(line-height, 12);
         display: inline-block;
       }
     }
     .tenet-legend {
       display: flex;
       align-items: center;
-      font-size: vw(8);
+      @include vw2(font-size, 8);
       color: #fff;
-      margin-bottom: vw(4);
+      @include vw2(margin-bottom, 4);
       &:last-of-type {
         margin: 0;
       }
       .legend-icon {
-        width: vw(16);
-        height: vw(10);
+        @include vw2(width, 16);
+        @include vw2(height, 10);
         border-radius: 1px;
-        margin-right: vw(10);
+        @include vw2(margin-right, 10);
       }
     }
   }
 
   .warning-details {
     position: absolute;
-    left: vw(277);
-    bottom: vw(135);
-    width: vw(136);
+    @include vw2(left, 277);
+    @include vw2(bottom, 135);
+    @include vw2(width, 136);
     background: rgba(11, 28, 61, 0.7);
     border: 1px solid rgba(153, 204, 255, 0.25);
-    padding: vw(8);
-    font-size: vw(8);
+    @include vw2(padding, 8);
+    @include vw2(font-size, 8);
     color: #fff;
     .type-date {
       display: flex;
       align-items: center;
       .type {
-        width: vw(40);
-        height: vw(14);
+        @include vw2(width, 40);
+        @include vw2(height, 14);
         border-radius: 2px;
-        font-size: vw(8);
+        @include vw2(font-size, 8);
         color: #fff;
         text-align: center;
-        line-height: vw(14);
-        margin-right: vw(10);
+        @include vw2(line-height, 14);
+        @include vw2(margin-right, 10);
       }
     }
     p {

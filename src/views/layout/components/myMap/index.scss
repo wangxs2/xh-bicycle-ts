@@ -16,32 +16,48 @@
     // box-shadow: 0px 0px vh(20) vh(0.8) rgba(153, 204, 255, 0.2) inset;
     border-radius: vh(2);
   }
+  .full-screen-btn {
+    position: absolute;
+    @include vh2(top, 10);
+    @include vw2(right, 100);
+    @include vw2(width, 23);
+    @include vw2(height, 23);
+    text-align: center;
+    @include vw2(line-height, 23);
+    background: #fff;
+    box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.3);
+    border-radius: vh(2);
+    cursor: pointer;
+    .iconfont {
+      @include vw2(font-size, 10);
+    }
+  }
   .setting-btn {
     position: absolute;
-    top: vh(10);
-    right: vw(10);
-    width: vw(80);
-    height: vw(23);
-    line-height: vw(23);
+    @include vh2(top, 10);
+    @include vw2(right, 10);
+    @include vw2(width, 80);
+    @include vw2(height, 23);
+    @include vw2(line-height, 23);
     background: #fff;
     box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.3);
     border-radius: vh(2);
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: vw(10);
+    @include vw2(font-size, 10);
     cursor: pointer;
     img {
-      width: vw(16);
-      height: vw(10);
-      margin-right: vw(6);
+      @include vw2(width, 16);
+      @include vw2(height, 10);
+      @include vw2(margin-right, 6);
     }
   }
   .setting-content {
     position: absolute;
-    top: vh(34);
-    right: vw(10);
-    width: vw(140);
+    @include vh2(top, 34);
+    @include vw2(right, 10);
+    @include vw2(width, 140);
     // height: 41.7vh;
     background: rgba(35, 36, 52, 0.9);
     border: 1px solid rgba(153, 204, 255, 0.25);
@@ -51,17 +67,17 @@
     .area-enterprises {
       width: 100%;
       display: flex;
-      height: vw(18);
+      @include vw2(height, 18);
       align-items: center;
       justify-content: space-between;
-      font-size: vw(10);
-      line-height: vw(16);
+      @include vw2(font-size, 10);
+      @include vw2(line-height, 16);
       font-weight: 400;
       font-family: 'Microsoft YaHei', '微软雅黑';
       color: rgba(32, 192, 254, 1);
       position: relative;
       .area-name {
-        width: vw(50);
+        @include vw2(width, 50);
         height: 100%;
         text-align: center;
         background: rgba(26, 66, 118, 0.6);
@@ -70,13 +86,13 @@
         box-sizing: border-box;
       }
       .enterprises {
-        width: vw(68);
+        @include vw2(width, 68);
         height: 100%;
         background: rgba(26, 66, 118, 0.6);
         border: 1px solid rgba(32, 192, 254, 1);
         box-shadow: 0px 0 vw(4) vw(0.4) rgba(0, 146, 255, 1) inset;
-        padding-left: vw(10);
-        padding-right: vw(18);
+        @include vw2(padding-left, 10);
+        @include vw2(padding-right, 18);
         box-sizing: border-box;
         overflow: hidden;
         white-space: nowrap;
@@ -85,7 +101,7 @@
         position: relative;
         .drop-down {
           position: absolute;
-          right: vw(6);
+          @include vw2(right, 6);
           color: #fff;
           transition: transform 0.25s linear;
           &.active {
@@ -95,9 +111,9 @@
       }
       .drop-down-select {
         position: absolute;
-        right: vw(-10);
-        top: vw(22);
-        width: vw(78);
+        @include vw2(right, -10);
+        @include vw2(top, 22);
+        @include vw2(width, 78);
         background: rgba(12, 49, 143, 1);
         padding: vw(6) 0 vw(4) 0;
         box-sizing: border-box;
@@ -108,8 +124,8 @@
           border-style: solid;
           border-color: transparent transparent rgba(12, 49, 143, 1);
           position: absolute;
-          top: vw(-4);
-          left: vw(4);
+          @include vw2(top, -4);
+          @include vw2(left, 4);
         }
         .select-box {
           width: 100%;
@@ -133,7 +149,7 @@
       }
     }
     .setting-selects {
-      margin-top: vh(10);
+      @include vw2(margin-top, 10);
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -142,16 +158,16 @@
         display: flex;
         align-items: center;
         color: #fff;
-        font-size: vw(10);
-        margin-bottom: vh(14);
+        @include vw2(font-size, 10);
+        @include vw2(margin-bottom, 14);
         &:last-of-type {
           margin: 0;
         }
         cursor: pointer;
         img {
-          margin-right: vw(6);
-          width: vw(12);
-          height: vw(12);
+          @include vw2(margin-right, 6);
+          @include vw2(width, 12);
+          @include vw2(height, 12);
         }
       }
     }
@@ -159,12 +175,10 @@
   .workOrder-details {
     position: absolute;
     z-index: 10;
-    right: vw(400);
-    top: vh(58);
-    // width: vw(320);
-    width: vw(214);
-    height: vw(326);
-    // height: vw(490);
+    @include vw2(right, 400);
+    @include vh2(top, 58);
+    @include vw2(width, 214);
+    @include vw2(height, 326);
     background: #00478f;
     border-top: 2px solid #00cafa;
     border-bottom: 2px solid #00cafa;
@@ -173,29 +187,29 @@
     color: #fefefe;
     .workOrder-details-close {
       position: absolute;
-      right: vw(6);
-      top: vw(6);
-      width: vw(18);
-      height: vw(18);
+      @include vw2(right, 6);
+      @include vw2(top, 6);
+      @include vw2(width, 18);
+      @include vw2(height, 18);
       text-align: center;
-      line-height: vw(18);
-      font-size: vw(10);
+      @include vw2(line-height, 18);
+      @include vw2(font-size, 10);
       cursor: pointer;
     }
     .details-status {
       width: 100%;
-      height: vw(30);
+      @include vw2(height, 30);
       text-align: center;
-      line-height: vw(28);
-      font-size: vw(12);
+      @include vw2(line-height, 28);
+      @include vw2(font-size, 12);
     }
     .imgs {
       width: 100%;
-      height: vw(156);
+      @include vw2(height, 156);
       .img-item {
         position: relative;
-        width: vw(188);
-        height: vw(156);
+        // @include vw2(width, 188);
+        @include vw2(height, 156);
         img {
           width: 100%;
           height: 100%;
@@ -205,20 +219,20 @@
           left: 0;
           bottom: 0;
           width: 100%;
-          height: vw(22);
+          @include vw2(height, 22);
           background: rgba(0, 0, 0, 0.6);
-          font-size: vw(10);
+          @include vw2(font-size, 10);
           font-weight: bold;
           text-align: center;
-          line-height: vw(22);
+          @include vw2(line-height, 22);
         }
       }
     }
     .details-text {
-      margin-top: vw(2);
-      font-size: vw(10);
+      @include vw2(margin-top, 2);
+      @include vw2(font-size, 10);
       color: #fff;
-      line-height: vw(18);
+      @include vw2(line-height, 18);
       > p {
         width: 100%;
         overflow: hidden;
@@ -228,20 +242,20 @@
       }
     }
     .dispose-status {
-      font-size: vw(12);
+      @include vw2(font-size, 12);
       font-weight: bold;
       position: absolute;
-      right: vw(12);
-      bottom: vw(12);
+      @include vw2(right, 12);
+      @include vw2(bottom, 12);
     }
   }
   .workOrders {
     position: absolute;
     z-index: 9;
-    right: vw(266);
-    top: vh(38);
-    width: vw(214);
-    height: vw(336);
+    @include vw2(right, 266);
+    @include vh2(top, 38);
+    @include vw2(width, 214);
+    @include vw2(height, 336);
     background: #00478f;
     border-top: 2px solid #00cafa;
     border-bottom: 2px solid #00cafa;
@@ -254,24 +268,24 @@
       box-sizing: border-box;
       .details-status {
         width: 100%;
-        height: vw(30);
+        @include vw2(height, 30);
         text-align: center;
-        line-height: vw(28);
-        font-size: vw(12);
+        @include vw2(line-height, 28);
+        @include vw2(font-size, 12);
       }
       .imgs {
         width: 100%;
-        height: vw(156);
+        @include vw2(height, 156);
         img {
           width: 100%;
           height: 100%;
         }
       }
       .details-text {
-        margin-top: vw(2);
-        font-size: vw(10);
+        @include vw2(margin-top, 2);
+        @include vw2(font-size, 10);
         color: #fff;
-        line-height: vw(18);
+        @include vw2(line-height, 18);
         > p {
           width: 100%;
           overflow: hidden;
@@ -281,20 +295,20 @@
         }
       }
       .dispose-status {
-        font-size: vw(12);
+        @include vw2(font-size, 12);
         font-weight: bold;
         position: absolute;
-        right: vw(12);
-        bottom: vw(19);
+        @include vw2(right, 12);
+        @include vw2(bottom, 19);
       }
     }
   }
   .map-legend {
     position: absolute;
-    bottom: vh(12);
-    left: vw(12);
-    width: vw(116);
-    height: vw(134);
+    @include vh2(bottom, 12);
+    @include vw2(left, 12);
+    @include vw2(width, 116);
+    @include vw2(height, 134);
     background: rgba(0, 0, 0, 0.4);
     padding: vw(9) 0 vw(9) vw(12);
     box-sizing: border-box;
@@ -306,34 +320,34 @@
       width: 100%;
       display: flex;
       align-items: center;
-      font-size: vw(10);
+      @include vw2(font-size, 10);
       color: #fefefe;
       img {
-        width: vw(17);
-        height: vw(17);
-        margin-right: vw(6);
+        @include vw2(width, 17);
+        @include vw2(height, 17);
+        @include vw2(margin-right, 6);
       }
     }
     .workOrder-tab {
       position: absolute;
       left: 100%;
       top: 0;
-      width: vw(426);
-      height: vw(134); // padding-top: 0.34rem;
-      padding-left: vw(7);
+      @include vw2(width, 426);
+      @include vw2(height, 134);
+      @include vw2(padding-left, 7);
       box-sizing: border-box;
       .slide-box {
         width: 100%;
         height: 100%;
         display: flex;
-        font-size: vw(10);
+        @include vw2(font-size, 10);
         flex-direction: column;
         background: rgba(0, 0, 0, 0.4);
         .tab-head {
           width: 100%;
-          height: vw(22);
+          @include vw2(height, 22);
           color: #fff;
-          line-height: vw(22);
+          @include vw2(line-height, 22);
           text-align: center;
           display: flex;
           background: rgba(0, 0, 0, 0.4);
@@ -346,12 +360,12 @@
           height: 1px;
           width: 100%;
           color: #fff;
-          line-height: vw(34);
+          @include vw2(line-height, 34);
           text-align: center;
           overflow: hidden;
           overflow-y: auto;
           &::-webkit-scrollbar {
-            width: vw(8);
+            @include vw2(width, 8);
             height: 1px;
           }
           &::-webkit-scrollbar-thumb {
@@ -366,7 +380,7 @@
           }
           .tab-item {
             width: 100%;
-            height: vw(22);
+            @include vw2(height, 22);
             display: flex;
           }
         }
@@ -375,10 +389,10 @@
   }
   .staff-legend {
     position: absolute;
-    top: vh(10);
-    left: vw(12);
-    width: vw(116);
-    height: vw(280);
+    @include vh2(top, 10);
+    @include vw2(left, 12);
+    @include vw2(width, 116);
+    @include vw2(height, 280);
     background: rgba(0, 0, 0, 0.4);
     padding: vw(9) 0 vw(9) vw(10);
     box-sizing: border-box;
@@ -390,19 +404,19 @@
       width: 100%;
       display: flex;
       align-items: center;
-      font-size: vw(9);
+      @include vw2(font-size, 9);
       color: #fefefe;
       box-sizing: border-box;
       &.active {
         color: #20c0fe;
       }
       &.sub {
-        padding-left: vw(24);
+        @include vw2(padding-left, 24);
       }
       .legend-icon {
-        width: vw(17);
-        height: vw(17);
-        margin-right: vw(6);
+        @include vw2(width, 17);
+        @include vw2(height, 17);
+        @include vw2(margin-right, 6);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -410,8 +424,8 @@
           width: 100%;
           height: 100%;
           &.small {
-            width: vw(11);
-            height: vw(11);
+            @include vw2(width, 11);
+            @include vw2(height, 11);
           }
         }
       }
