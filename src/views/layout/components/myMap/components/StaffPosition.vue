@@ -33,30 +33,30 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit, Watch } from 'vue-property-decorator'
+import { Component, Vue, Prop, Emit, Watch } from 'vue-property-decorator';
 
 @Component({})
 export default class StaffPosition extends Vue {
   @Prop()
-  public params!: any
+  public params!: any;
 
   // 地址解析器
-  public geocoder: any = null
+  public geocoder: any = null;
 
   // 人员地址
-  public Addr: string = ''
+  public Addr: string = '';
 
   public mounted() {
     this.geocoder = new AMap.Geocoder({
       batch: false,
-      radius: 500
-    })
-    this.getPosition()
+      radius: 500,
+    });
+    this.getPosition();
   }
 
   @Watch('params')
   public onChangedParams(val: any, oldVal: any) {
-    this.getPosition()
+    this.getPosition();
   }
 
   // 关闭弹窗 清除数据
@@ -71,13 +71,13 @@ export default class StaffPosition extends Vue {
       [this.params.gpsLongitude, this.params.gpsLatitude],
       (status, result) => {
         if (status === 'complete' && result.regeocode) {
-          const address = result.regeocode.formattedAddress
-          this.Addr = address
+          const address = result.regeocode.formattedAddress;
+          this.Addr = address;
         } else {
-          this.Addr = '--'
+          this.Addr = '--';
         }
-      }
-    )
+      },
+    );
   }
 }
 </script>

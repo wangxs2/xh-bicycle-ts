@@ -9,6 +9,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch, Emit } from 'vue-property-decorator';
 import echarts from 'echarts';
+import { refinedCal } from '@/libs/util.ts';
 
 interface PropData {
   activeRate: Array<string | number>;
@@ -68,6 +69,7 @@ export default class BicyTrendChart extends Vue {
     const option = {
       tooltip: {
         trigger: 'axis',
+        formatter: '时间：{b0}<br /> 单车数量：{c0}辆<br />活跃率：{c1}%',
       },
       legend: {
         data: ['单车数量', '活跃率'],
@@ -185,7 +187,12 @@ export default class BicyTrendChart extends Vue {
           itemStyle: {
             color: '#F1D251',
           },
-          data: this.params.activeRate,
+          data: this.params.activeRate.map((item: any): number => {
+            return refinedCal(
+            `${item}*100`,
+            2,
+          );
+          }),
         },
       ],
     };

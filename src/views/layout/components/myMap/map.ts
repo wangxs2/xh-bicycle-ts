@@ -79,6 +79,11 @@ class MyMap {
     target.setExtData(data);
   }
 
+  // 是否显示人员位置点
+  public isForbidGroup(flag: boolean): void {
+    flag ? this.forbidGroup.show() : this.forbidGroup.hide();
+  }
+
   // 禁停区事件点
   public forbidGroupEvent(callback: any): void {
     // 事件先清除再添加
@@ -196,19 +201,19 @@ class MyMap {
       extData: { code: data.terminalId },
     });
 
-    // const circle = new circleShow({
-    //   center: position,
-    //   radius: 30,
-    //   level: 3,
-    //   color: {
-    //     fillColor: this.BleColor(data.onLineStatus),
-    //     fillOpacity: 1,
-    //   },
-    // });
+    const circle = new circleShow({
+      center: position,
+      radius: 30,
+      level: 3,
+      color: {
+        fillColor: this.BleColor(data.onLineStatus),
+        fillOpacity: 1,
+      },
+    });
 
-    // this.ripples[data.terminalId] = circle;
+    this.ripples[data.terminalId] = circle;
 
-    // this.addOverlayGroup('rippleGroup', circle.circleGroup);
+    this.addOverlayGroup('rippleGroup', circle.circleGroup);
 
     return marker;
   }

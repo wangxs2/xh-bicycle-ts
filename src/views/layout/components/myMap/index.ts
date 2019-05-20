@@ -7,6 +7,7 @@ import staffPosition from './components/StaffPosition.vue';
 import bleCheckTable from './components/bleCheckTable.vue';
 import badBicyStatistics from './components/badBicyStatistics.vue';
 import earlyWarning from './components/earlyWarning.vue';
+import forbidInfo from './components/forbidInfo.vue';
 import { arrGroup, refinedCal, eventDelegate } from '@/libs/util.ts';
 import screenfull from 'screenfull';
 import API from '@/api/index.ts';
@@ -58,6 +59,7 @@ interface DataFormat {
     bleCheckTable,
     badBicyStatistics,
     earlyWarning,
+    forbidInfo,
   },
 })
 export default class Map extends Vue {
@@ -106,10 +108,10 @@ export default class Map extends Vue {
       state: true,
       name: '街镇信息',
     },
-    // {
-    //   state: true,
-    //   name: '禁停区域',
-    // },
+    {
+      state: true,
+      name: '禁停区域',
+    },
     {
       state: true,
       name: '单车治理',
@@ -377,7 +379,7 @@ export default class Map extends Vue {
   private townCompanyData: any = null;
 
   // 定时器保存
-  private timeoutObjs: any[] = [];
+  private timeoutObjs: any = {};
 
   // 蓝牙设备数据
   private bleContainStatus: any = {};
@@ -424,6 +426,9 @@ export default class Map extends Vue {
   // 是否显示禁停区
   private isForbid: boolean = true;
 
+  // 显示禁停区的名称 控制显示
+  private ForbidName: string = '';
+
   public created() {
     this.getBicyActiveCurve();
   }
@@ -431,7 +436,7 @@ export default class Map extends Vue {
   public mounted() {
     myMap = new MyMap({ el: 'mapContainer' });
     this.getTownBoundary();
-    this.getForbid()
+    this.getForbid();
     this.getBicyClePosition();
     this.getAreaIdAndDate();
     this.getBleContainStatus();
@@ -450,6 +455,19 @@ export default class Map extends Vue {
 
       this.$Bus.$emit('updateScreen');
     });
+  }
+
+  // 定时刷新任务
+  public timeoutEvent(call: string, time: number = 600000): void {
+    // 先清除之前的请求
+    if (this.timeoutObjs[call]) {
+      clearTimeout(this.timeoutObjs[call]);
+      this.timeoutObjs[call] = null;
+    }
+
+    this.timeoutObjs[call] = setTimeout(() => {
+      this[call]();
+    }, time);
   }
 
   // 禁停区
@@ -478,9 +496,12 @@ export default class Map extends Vue {
           this.ForbidData[item.regionName] = item;
         });
         myMap.forbidGroupEvent((data: any) => {
-          console.log(data)
+          this.ForbidName = data;
         });
       }
+
+      // 定时任务
+      this.timeoutEvent('getForbid');
     });
   }
 
@@ -561,18 +582,21 @@ export default class Map extends Vue {
           this.StaffData = this.userPositionMsg[id];
           this.isStaffData = true;
         });
+
+        this.timeoutEvent('getUserPositionMsg');
       },
     );
   }
 
   // 获取区域15天的活跃曲线数据
-  private getBicyActiveCurve(companyCode: string = ''): void {
-    API.getBicyActiveCurve(companyCode === 'all' ? '' : companyCode).then(
+  private getBicyActiveCurve(): void {
+    API.getBicyActiveCurve(this.selectEnterpriseCode === 'all' ? '' : this.selectEnterpriseCode).then(
       (res: any): void => {
         this.bicyActiveData = res.changeLine;
         if (this.isBicyTrend) {
           this.openFifteenWin(this.openTownName);
         }
+        this.timeoutEvent('getBicyActiveCurve');
       },
     );
   }
@@ -608,6 +632,8 @@ export default class Map extends Vue {
             }
           });
         }
+
+        this.timeoutEvent('getBleContainStatus');
       },
     );
   }
@@ -671,13 +697,15 @@ export default class Map extends Vue {
         myMap.pointGroupControl();
         break;
       case '禁停区域':
+        this.ForbidName = '';
+        myMap.isForbidGroup(data.state);
         break;
       case '单车治理':
         this.isShowLegend = data.state;
         myMap.isWorkGroup(data.state);
         break;
       case '治理轮循':
-        this.$nextTick(function () {
+        this.$nextTick(function() {
           this.roundRobinOptions = {
             autoplay: true, // 可选选项，自动滑动
             simulateTouch: false,
@@ -715,7 +743,7 @@ export default class Map extends Vue {
    * 选择图例获取 对应状态工单
    */
   private showLegendTable(index: number | string) {
-    this.$nextTick(function () {
+    this.$nextTick(function() {
       this.selectLegend = index;
       this.isShowLegendTab = true;
     });
@@ -880,7 +908,7 @@ export default class Map extends Vue {
         detailsTexts, // 处理记录
       };
 
-      this.$nextTick(function () {
+      this.$nextTick(function() {
         this.workOrderDisposeOptions = {
           autoplay: true, // 可选选项，自动滑动
           simulateTouch: false,
@@ -983,11 +1011,6 @@ export default class Map extends Vue {
     API.getAreaIdAndDate(startTime, startTime).then(
       (res: any): void => {
         if (res.status === 0) {
-          // 先清除之前的请求
-          if (this.timeoutObjs[0]) {
-            clearTimeout(this.timeoutObjs[0]);
-            this.timeoutObjs[0] = null;
-          }
           // 数据处理
           this.refreshPointData(res.data);
           // 分拣不同状态工单
@@ -999,9 +1022,7 @@ export default class Map extends Vue {
           });
 
           // 定时刷新
-          this.timeoutObjs[0] = setTimeout(() => {
-            this.getAreaIdAndDate();
-          }, 600000);
+          this.timeoutEvent('getAreaIdAndDate');
         }
       },
     );
@@ -1105,7 +1126,14 @@ export default class Map extends Vue {
         }
       }
     });
-    this.sheetWorkOrder = sortArr;
+
+    this.sheetWorkOrder = sortArr.map((itemArr: any[]) => {
+      return itemArr.sort((a: any, b: any) => {
+        a = new Date(a[0]);
+        b = new Date(b[0]);
+        return a > b ? -1 : a < b ? 1 : 0;
+      });
+    });
   }
 
   /**
@@ -1120,7 +1148,7 @@ export default class Map extends Vue {
     this.selectEnterpriseName = name;
 
     this.getBicyClePosition(code);
-    this.getBicyActiveCurve(code);
+    this.getBicyActiveCurve();
     this.disCityData(this.selectEnterpriseCode);
     this.disAreaData(this.selectEnterpriseCode);
   }
@@ -1168,6 +1196,9 @@ export default class Map extends Vue {
 
         this.disCityData(this.selectEnterpriseCode);
         this.disAreaData(this.selectEnterpriseCode);
+
+        // 定时刷新
+        this.timeoutEvent('getTownBoundary');
       },
     );
   }

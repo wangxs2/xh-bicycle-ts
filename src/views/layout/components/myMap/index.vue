@@ -178,6 +178,12 @@
     </transition>
     <!-- 人员位置信息 E -->
 
+    <!-- 禁停区详情 S --> 
+    <transition name="fade">
+      <forbid-info v-if="ForbidName !== ''" @close="ForbidName = ''" :params="ForbidData[ForbidName]"></forbid-info>
+    </transition>
+    <!-- 禁停区详情 E -->
+
     <!-- 人员图例 S -->
     <transition name="fade">
       <div class="staff-legend" v-if="isShowStaffLegend">
