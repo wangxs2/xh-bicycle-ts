@@ -1,8 +1,9 @@
 import http from '@/libs/http';
+import store from '@/stores/index';
 
 const getKey = () => {
-  // return store.state.key
-  return sessionStorage.getItem('KEY');
+  return store.getters.key;
+  // return sessionStorage.getItem('KEY');
 };
 
 export default {
@@ -210,5 +211,12 @@ export default {
     return http('boundary/findOrgJtRegionBoundaryAndBikeNum/' + getKey(), {
       params,
     });
+  },
+
+  /**
+   * 获取页面配置
+   */
+  getConfig(url): Promise<{}> {
+    return http('plat/findPlatFormConfig/' + url);
   },
 };

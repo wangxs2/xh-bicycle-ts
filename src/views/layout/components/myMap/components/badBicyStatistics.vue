@@ -220,7 +220,6 @@ export default class BadBicyStatistics extends Vue {
   private resizeEvent() {
     this.chartLNode.resize();
     this.chartRNode.resize();
-    console.log(123);
   }
 
   // 获取漏斗图数据

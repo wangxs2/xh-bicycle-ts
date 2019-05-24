@@ -31,9 +31,9 @@ module.exports = {
     proxy: {
       [process.env.VUE_APP_API_URL]: {
         // target: `http://10.1.4.72:8090${process.env.VUE_APP_API_URL}`,
-        target: `http://10.1.4.163:8090${process.env.VUE_APP_API_URL}`,
+        // target: `http://10.1.4.163:8090${process.env.VUE_APP_API_URL}`,
         // target: `http://10.1.4.108:8090${process.env.VUE_APP_API_URL}`,
-        // target: `http://10.1.30.202:18181${process.env.VUE_APP_API_URL}`,
+        target: `http://10.1.30.202:18181${process.env.VUE_APP_API_URL}`,
         // target: 'http://106.14.198.128:18181/sharebikesclean',
         changeOrigin: true,
         pathRewrite: {

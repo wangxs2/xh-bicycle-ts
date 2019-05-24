@@ -290,11 +290,11 @@ class MyMap {
   public BleColor(state: string): string {
     let color: string = '';
     if (state === '离线') {
-      color = '#ff0000';
+      color = '#ff8500';
     } else if (state === '在线') {
-      color = '#14e1ff';
+      color = '#00b78a';
     } else {
-      color = '#ff0000';
+      color = '#ff8500';
     }
     return color;
   }

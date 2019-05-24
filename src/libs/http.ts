@@ -1,11 +1,12 @@
 import axios from 'axios';
 import qs from 'qs';
-// import router from '../router'
+import router from '../router';
+import { Message } from 'element-ui';
 
 // 创建axios实例
 const Axios = axios.create({
   baseURL: process.env.VUE_APP_API_URL + '/',
-  timeout: 10000,
+  timeout: 20000,
   withCredentials: true, // 是否允许带cookie这些
 });
 
@@ -30,24 +31,15 @@ Axios.interceptors.response.use(
   (error) => {
     const res = error.response;
     if (res) {
-      switch (
-        res.status
-        // 401 登录过期 返回登录
-        // case 401:
-        //   router.replace({
-        //     path: '/error401'
-        //   })
-        //   break
-        // case 404:
-        // case 500:
-        //   router.replace({
-        //     path: '/error404'
-        //   })
-        //   break
-      ) {
+      switch (res.status) {
+        // 401 key不存在
+        case 401:
+          Message.error(res.data.message);
+          router.replace({
+            path: '/login',
+          });
+          break;
       }
-    } else {
-      // console.log;
     }
     return Promise.reject(error);
   },

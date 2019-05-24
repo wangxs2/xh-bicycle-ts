@@ -25,7 +25,7 @@
       <div class="setting-content" v-show="settingShow">
         <!-- 企业 -->
         <div class="area-enterprises">
-          <div class="area-name">徐汇区</div>
+          <div class="area-name">{{pageConfig.orgName}}</div>
           <div class="enterprises" @click="isShowEnterprise = !isShowEnterprise">
             <span>{{selectEnterpriseName}}</span>
             <i class="iconfont icon-arrLeft-fill drop-down" :class="{active:isShowEnterprise}"></i>

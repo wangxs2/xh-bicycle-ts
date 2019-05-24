@@ -1,4 +1,4 @@
-import { Component, Vue } from 'vue-property-decorator';
+
 import slideshow from '@/components/slideshow/index.vue';
 import bicyTrendChart from './components/bicyTrendChart.vue';
 import stationInfo from './components/stationInfo.vue';
@@ -8,12 +8,15 @@ import bleCheckTable from './components/bleCheckTable.vue';
 import badBicyStatistics from './components/badBicyStatistics.vue';
 import earlyWarning from './components/earlyWarning.vue';
 import forbidInfo from './components/forbidInfo.vue';
-import { arrGroup, refinedCal, eventDelegate } from '@/libs/util.ts';
+
+import { Component, Vue } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
 import screenfull from 'screenfull';
-import API from '@/api/index.ts';
-import MyMap from './map';
 import moment from 'moment';
 
+import MyMap from './map';
+import API from '@/api/index.ts';
+import { arrGroup, refinedCal, eventDelegate } from '@/libs/util.ts';
 moment.locale('zh-cn');
 
 const fullObj: any = screenfull; // 全屏实例
@@ -63,6 +66,9 @@ interface DataFormat {
   },
 })
 export default class Map extends Vue {
+  @Getter('pageConfig')
+  public pageConfig: any;
+
   private loadNum: number = 0; // 加载次数
   private cityPointData: any = {}; // 市级点数据
   private areaPointData: any = {}; // 区级点数据
@@ -848,7 +854,7 @@ export default class Map extends Vue {
         }
       } else {
         // 治理轮循的图片单张
-        roundRobinimg = data.dispatchPhotoURLs[0];
+        roundRobinimg = process.env.VUE_APP_IMG_URL + data.dispatchPhotoURLs[0];
       }
     } else if (data.sheetStatus === 2 || data.sheetStatus === 4) {
       const addDetailsTexts = [

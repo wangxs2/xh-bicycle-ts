@@ -248,13 +248,10 @@ export default class EarlyWarning extends Vue {
           return item;
         });
 
-        if (this.EarlyWarnData.length >= 2) {
-          this.Animation(0);
-        }
 
-        if (this.ClearEarly.length >= 2) {
-          this.Animation(1);
-        }
+        this.Animation(1);
+        this.Animation(0);
+
       },
     );
   }
@@ -332,6 +329,10 @@ export default class EarlyWarning extends Vue {
   public Animation(type: number): void {
     let first: any;
     const data: any = type === 0 ? this.EarlyWarnData : this.ClearEarly;
+
+    if (data.length < 3) {
+      return;
+    }
 
     const animation = (): void => {
       if (this.clearTime[type]) {

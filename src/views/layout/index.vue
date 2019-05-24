@@ -67,7 +67,7 @@
       <div class="cont-center">
 
         <div class="cont-tit">
-          <div class="cont-text">徐汇区共享单车实时分布情况</div>
+          <div class="cont-text">{{pageConfig.orgName}}共享单车实时分布情况</div>
         </div>
 
         <div class="map">
@@ -129,7 +129,9 @@ import orderSituation from './components/ordersituation/index';
 import workDispose from './components/workDispose/index';
 import command from './components/command/index';
 
+
 import { Component, Vue } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
 import API from '@/api/index';
 import { refinedCal, cloneObj } from '@/libs/util.ts';
 import moment from 'moment';
@@ -150,6 +152,8 @@ moment.locale('zh-cn');
   },
 })
 export default class Layout extends Vue {
+  @Getter('pageConfig')
+  public pageConfig: any;
   // 重点区排名数据
   private activeRange: Array<{}> = [];
   // 早高峰排名数据
