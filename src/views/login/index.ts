@@ -1,7 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
 import screenfull from 'screenfull';
-// import { State, Mutation } from 'vuex-class';
-import API from '@/api/index';
 
 @Component
 export default class Login extends Vue {
