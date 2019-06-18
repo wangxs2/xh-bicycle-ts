@@ -173,80 +173,80 @@ export default class Map extends Vue {
     {
       icon: staffImgs.dispatch,
       code: 'dispatch',
-      name: '工单督办人员',
-    },
-    {
-      icon: staffImgs.clean,
-      code: 'clean',
-      size: 'small',
-      name: '企业运维人员',
-    },
-    {
-      icon: staffImgs['clean-1006'],
-      code: 'clean-1006',
-      type: 'children',
-      name: '摩拜',
-    },
-    {
-      icon: staffImgs['clean-1007'],
-      code: 'clean-1007',
-      type: 'children',
-      name: 'OFO',
-    },
-    {
-      icon: staffImgs['clean-1015'],
-      code: 'clean-1015',
-      type: 'children',
-      name: '哈罗',
-    },
-    {
-      icon: staffImgs['clean-1059'],
-      code: 'clean-1059',
-      type: 'children',
-      name: '享骑',
-    },
-    {
-      icon: staffImgs['clean-1014'],
-      code: 'clean-1014',
-      type: 'children',
-      name: '赳赳',
+      name: '督办人员',
     },
     {
       icon: staffImgs.manage,
       code: 'manage',
       size: 'small',
-      name: '企业管理人员',
+      name: '运维人员',
     },
     {
       icon: staffImgs['manage-1006'],
-      code: 'manage-1006',
+      code: '1006',
       type: 'children',
       name: '摩拜',
     },
     {
       icon: staffImgs['manage-1007'],
-      code: 'manage-1007',
+      code: '1007',
       type: 'children',
       name: 'OFO',
     },
     {
       icon: staffImgs['manage-1015'],
-      code: 'manage-1015',
+      code: '1015',
       type: 'children',
       name: '哈罗',
     },
     {
       icon: staffImgs['manage-1059'],
-      code: 'manage-1059',
+      code: '1059',
       type: 'children',
       name: '享骑',
     },
     {
       icon: staffImgs['manage-1014'],
-      code: 'manage-1014',
+      code: '1014',
       type: 'children',
       name: '赳赳',
     },
+    // {
+    //   icon: staffImgs.manage,
+    //   code: 'manage',
+    //   size: 'small',
+    //   name: '企业管理人员',
+    // },
+    // {
+    //   icon: staffImgs['manage-1006'],
+    //   code: 'manage-1006',
+    //   type: 'children',
+    //   name: '摩拜',
+    // },
+    // {
+    //   icon: staffImgs['manage-1007'],
+    //   code: 'manage-1007',
+    //   type: 'children',
+    //   name: 'OFO',
+    // },
+    // {
+    //   icon: staffImgs['manage-1015'],
+    //   code: 'manage-1015',
+    //   type: 'children',
+    //   name: '哈罗',
+    // },
+    // {
+    //   icon: staffImgs['manage-1059'],
+    //   code: 'manage-1059',
+    //   type: 'children',
+    //   name: '享骑',
+    // },
+    // {
+    //   icon: staffImgs['manage-1014'],
+    //   code: 'manage-1014',
+    //   type: 'children',
+    //   name: '赳赳',
+    // },
   ];
 
   // 是否显示人员位置图例
@@ -533,54 +533,77 @@ export default class Map extends Vue {
   private getUserPositionMsg(): void {
     API.getUserPositionMsg().then(
       (res: any): void => {
+        // this.staffTypeDate = {
+        //   'dispatch': 0, // 督导人员
+        //   'clean': 0, // 运维人员
+        //   'manage': 0, // 管理人员
+        //   'clean-1006': 0, // 摩拜运维
+        //   'clean-1007': 0, // ofo运维
+        //   'clean-1015': 0, // 哈罗运维
+        //   'clean-1059': 0, // 享骑运维
+        //   'clean-1014': 0, // 赳赳运维
+        //   'manage-1006': 0, // 摩拜管理
+        //   'manage-1007': 0, // ofo管理
+        //   'manage-1015': 0, // 哈罗管理
+        //   'manage-1059': 0, // 享骑管理
+        //   'manage-1014': 0, // 赳赳管理
+        // };
         this.staffTypeDate = {
-          'dispatch': 0, // 督导人员
-          'clean': 0, // 运维人员
-          'manage': 0, // 管理人员
-          'clean-1006': 0, // 摩拜运维
-          'clean-1007': 0, // ofo运维
-          'clean-1015': 0, // 哈罗运维
-          'clean-1059': 0, // 享骑运维
-          'clean-1014': 0, // 赳赳运维
-          'manage-1006': 0, // 摩拜管理
-          'manage-1007': 0, // ofo管理
-          'manage-1015': 0, // 哈罗管理
-          'manage-1059': 0, // 享骑管理
-          'manage-1014': 0, // 赳赳管理
+          dispatch: 0, // 督导人员
+          manage: 0, // 运维人员
+          1006: 0, // 摩拜运维
+          1007: 0, // ofo运维
+          1015: 0, // 哈罗运维
+          1059: 0, // 享骑运维
+          1014: 0, // 赳赳运维
         };
-        let code: string = '';
+        // let code: string = '';
         res.data.forEach(
           (item: any): void => {
-            code = item.userCode + '-' + item.companyCode;
-            if (item.userCode === 'dispatch') {
-              this.staffTypeDate.dispatch += 1;
-              item.code = 'dispatch';
-            } else if (item.userCode === 'clean') {
-              this.staffTypeDate.clean += 1;
-            } else if (item.userCode === 'manage') {
-              this.staffTypeDate.manage += 1;
-            }
-
-            if (this.staffTypeDate[code] !== undefined) {
-              this.staffTypeDate[code] += 1;
-              item.code = code;
-            }
-
-            if (item.gpsLongitude && item.gpsLatitude) {
-              if (this.userPositionMsg[item.userId]) {
-                myMap.upDataStaffPoint(item);
+            // code = item.userCode + '-' + item.companyCode;
+            // if (item.userCode === 'dispatch') {
+            //   this.staffTypeDate.dispatch += 1;
+            //   item.code = 'dispatch';
+            // } else
+            // if (item.userCode === 'clean') {
+            //   this.staffTypeDate.clean += 1;
+            // } else if (item.userCode === 'manage') {
+            //   this.staffTypeDate.manage += 1;
+            // }
+            if (item.sheetCode) {
+              if (item.userCode === 'admin'
+              || item.userCode === 'dispatch'
+              || item.userCode === 'global') {
+                this.staffTypeDate.dispatch += 1;
+                item.code = 'dispatch';
               } else {
-                myMap.addOverlayGroup(
-                  'staffGroup',
-                  myMap.createStaffPoint(
-                    item,
-                    staffImgs[item.code],
-                    this.isShowStaffLegend,
-                  ),
-                );
+                this.staffTypeDate.manage += 1;
+                if (this.staffTypeDate[item.companyCode] !== undefined) {
+                  this.staffTypeDate[item.companyCode] += 1;
+                  item.code = 'manage-' + item.companyCode;
+                }
               }
+              if (item.gpsLongitude && item.gpsLatitude) {
+                if (this.userPositionMsg[item.userId]) {
+                  myMap.upDataStaffPoint(item);
+                } else {
+                  myMap.addOverlayGroup(
+                    'staffGroup',
+                    myMap.createStaffPoint(
+                      item,
+                      staffImgs[item.code],
+                      this.isShowStaffLegend,
+                    ),
+                  );
+                }
+              }
+              this.userPositionMsg[item.userId] = item;
             }
-            this.userPositionMsg[item.userId] = item;
+
+            // if (this.staffTypeDate[code] !== undefined) {
+            //   this.staffTypeDate[code] += 1;
+            //   item.code = code;
+            // }
           },
         );
 

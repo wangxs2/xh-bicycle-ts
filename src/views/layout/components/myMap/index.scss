@@ -392,7 +392,7 @@
     @include vh2(top, 10);
     @include vw2(left, 12);
     @include vw2(width, 116);
-    @include vw2(height, 280);
+    @include vw2(height, 180);
     background: rgba(0, 0, 0, 0.4);
     padding: vw(9) 0 vw(9) vw(10);
     box-sizing: border-box;

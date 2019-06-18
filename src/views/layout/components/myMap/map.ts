@@ -196,7 +196,7 @@ class MyMap {
     const marker: object = new AMap.Marker({
       position,
       offset: new AMap.Pixel(-11, -11),
-      content: this.setStationContent(data.onLineStatus),
+      content: this.setStationContent(data),
       topWhenClick: true,
       extData: { code: data.terminalId },
     });
@@ -206,7 +206,7 @@ class MyMap {
       radius: 30,
       level: 3,
       color: {
-        fillColor: this.BleColor(data.onLineStatus),
+        fillColor: this.BleColor(data),
         fillOpacity: 1,
       },
     });
@@ -227,11 +227,9 @@ class MyMap {
     );
 
     // 修改水波颜色
-    this.ripples[data.terminalId].color.fillColor = this.BleColor(
-      data.onLineStatus,
-    );
+    this.ripples[data.terminalId].color.fillColor = this.BleColor(data);
 
-    target.setContent(this.setStationContent(data.onLineStatus));
+    target.setContent(this.setStationContent(data));
   }
 
   // 蓝牙点事件
@@ -287,23 +285,33 @@ class MyMap {
   }
 
   // 判断蓝牙状态返回颜色
-  public BleColor(state: string): string {
+  public BleColor(data: any): string {
     let color: string = '';
-    if (state === '离线') {
-      color = '#ff8500';
-    } else if (state === '在线') {
-      color = '#00b78a';
+    if (data.onLineStatus === '在线') {
+      if (data.warningStatus === '正常') {
+        // 绿色
+        color = '#7ED321';
+      } else if (data.warningStatus === '饱和') {
+        // 黄色
+        color = '#F5A623';
+      } else if (data.warningStatus === '报警') {
+        // 红色
+        color = '#D0021B';
+      } else {
+        // 防报错 绿色
+        color = '#7ED321';
+      }
     } else {
-      color = '#ff8500';
+      // 灰色
+      color = '#979797';
     }
+
     return color;
   }
 
   // 设置蓝牙嗅探（蓝牙基站）点样式
-  public setStationContent(state: string): string {
-    return `<div style="width:22px;height:22px;background:${this.BleColor(
-      state,
-    )};border-radius: 50%;"></div>`;
+  public setStationContent(data: any): string {
+    return `<div style="width:22px;height:22px;background:${this.BleColor(data)};border-radius: 50%;"></div>`;
   }
 
   // 创建工单

@@ -17,7 +17,7 @@ const app = {
     // 获取配置信息
     getConfig({commit}) {
       return new Promise((resolve, reject) => {
-        const key = sessionStorage.getItem('KEY')
+        const key = sessionStorage.getItem('KEY');
         API.getConfig(key).then((res: any) => {
           commit('SETKEY', key);
           commit('SETCONFIG', res.info);
