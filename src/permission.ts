@@ -22,9 +22,9 @@ router.beforeEach((to, from, next) => {
     if (store.getters.pageConfig) {
       next();
     } else {
-      if (sessionStorage.getItem('KEY')) {
+      const key = sessionStorage.getItem('KEY');
+      if (key) {
         // 拉取新的配置
-        const key = sessionStorage.getItem('KEY');
         API.getConfig(key).then((res: any) => {
           store.commit('SETKEY', key);
           store.commit('SETCONFIG', res.info);
