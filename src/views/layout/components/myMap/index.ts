@@ -23,20 +23,36 @@ const fullObj: any = screenfull; // 全屏实例
 let myMap: any = null; // 地图实例
 
 // 人员图片
+// const staffImgs: any = {
+//   'dispatch': require('@img/staffLegend/督办人员@3x.png'),
+//   'manage': require('@img/staffLegend/管理@3x.png'),
+//   'clean': require('@img/staffLegend/运维@3x.png'),
+//   'clean-1006': require('@img/staffLegend/摩拜运维@3x.png'),
+//   'clean-1007': require('@img/staffLegend/OFO运维@3x.png'),
+//   'clean-1015': require('@img/staffLegend/哈罗运维@3x.png'),
+//   'clean-1059': require('@img/staffLegend/享骑运维@3x.png'),
+//   'clean-1014': require('@img/staffLegend/赳赳运维@3x.png'),
+//   'manage-1006': require('@img/staffLegend/摩拜管理人员@3x.png'),
+//   'manage-1007': require('@img/staffLegend/OFO管理人员@3x.png'),
+//   'manage-1015': require('@img/staffLegend/哈罗管理人员@3x.png'),
+//   'manage-1059': require('@img/staffLegend/享骑管理人员@3x.png'),
+//   'manage-1014': require('@img/staffLegend/赳赳管理人员@3x.png'),
+// };
+
 const staffImgs: any = {
-  'dispatch': require('@img/staffLegend/督办人员@3x.png'),
-  'manage': require('@img/staffLegend/管理@3x.png'),
-  'clean': require('@img/staffLegend/运维@3x.png'),
-  'clean-1006': require('@img/staffLegend/摩拜运维@3x.png'),
-  'clean-1007': require('@img/staffLegend/OFO运维@3x.png'),
-  'clean-1015': require('@img/staffLegend/哈罗运维@3x.png'),
-  'clean-1059': require('@img/staffLegend/享骑运维@3x.png'),
-  'clean-1014': require('@img/staffLegend/赳赳运维@3x.png'),
-  'manage-1006': require('@img/staffLegend/摩拜管理人员@3x.png'),
-  'manage-1007': require('@img/staffLegend/OFO管理人员@3x.png'),
-  'manage-1015': require('@img/staffLegend/哈罗管理人员@3x.png'),
-  'manage-1059': require('@img/staffLegend/享骑管理人员@3x.png'),
-  'manage-1014': require('@img/staffLegend/赳赳管理人员@3x.png'),
+  'dispatch': `${process.env.BASE_URL}staffLegend/督办人员@3x.png`,
+  'manage': `${process.env.BASE_URL}staffLegend/管理@3x.png`,
+  'clean': `${process.env.BASE_URL}staffLegend/运维@3x.png`,
+  'clean-1006': `${process.env.BASE_URL}staffLegend/摩拜运维@3x.png`,
+  'clean-1007': `${process.env.BASE_URL}staffLegend/OFO运维@3x.png`,
+  'clean-1015': `${process.env.BASE_URL}staffLegend/哈罗运维@3x.png`,
+  'clean-1059': `${process.env.BASE_URL}staffLegend/享骑运维@3x.png`,
+  'clean-1014': `${process.env.BASE_URL}staffLegend/赳赳运维@3x.png`,
+  'manage-1006': `${process.env.BASE_URL}staffLegend/摩拜管理人员@3x.png`,
+  'manage-1007': `${process.env.BASE_URL}staffLegend/OFO管理人员@3x.png`,
+  'manage-1015': `${process.env.BASE_URL}staffLegend/哈罗管理人员@3x.png`,
+  'manage-1059': `${process.env.BASE_URL}staffLegend/享骑管理人员@3x.png`,
+  'manage-1014': `${process.env.BASE_URL}staffLegend/赳赳管理人员@3x.png`,
 };
 
 interface DataFormat {
@@ -253,25 +269,47 @@ export default class Map extends Vue {
   private isShowStaffLegend: boolean = false;
 
   // 图例数据
+  // private legendData: Array<{ icon: any; name: string }> = [
+  //   {
+  //     icon: require('@img/icon_1@3x.png'),
+  //     name: '自检',
+  //   },
+  //   {
+  //     icon: require('@img/icon_2@3x.png'),
+  //     name: '已派单',
+  //   },
+  //   {
+  //     icon: require('@img/icon_3@3x.png'),
+  //     name: '处理中',
+  //   },
+  //   {
+  //     icon: require('@img/icon_4@3x.png'),
+  //     name: '已处理',
+  //   },
+  //   {
+  //     icon: require('@img/icon_5@3x.png'),
+  //     name: '超时未处理',
+  //   },
+  // ];
   private legendData: Array<{ icon: any; name: string }> = [
     {
-      icon: require('@img/icon_1@3x.png'),
+      icon: `${process.env.BASE_URL}staffLegend/icon_1@3x.png`,
       name: '自检',
     },
     {
-      icon: require('@img/icon_2@3x.png'),
+      icon: `${process.env.BASE_URL}staffLegend/icon_2@3x.png`,
       name: '已派单',
     },
     {
-      icon: require('@img/icon_3@3x.png'),
+      icon: `${process.env.BASE_URL}staffLegend/icon_3@3x.png`,
       name: '处理中',
     },
     {
-      icon: require('@img/icon_4@3x.png'),
+      icon: `${process.env.BASE_URL}staffLegend/icon_4@3x.png`,
       name: '已处理',
     },
     {
-      icon: require('@img/icon_5@3x.png'),
+      icon: `${process.env.BASE_URL}staffLegend/icon_5@3x.png`,
       name: '超时未处理',
     },
   ];

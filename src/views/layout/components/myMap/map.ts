@@ -332,7 +332,12 @@ class MyMap {
 
   // 修改工单状态
   public updateWorkPoint(index: number, icon: string): void {
-    this.workOrderGroup.getOverlays()[index].setIcon(icon);
+    // this.workOrderGroup.getOverlays()[index].setIcon(icon);
+    this.workOrderGroup.getOverlays()[index].setIcon(new AMap.Icon({
+      size: new AMap.Size(22, 22),
+      image: icon,
+      imageSize: new AMap.Size(22, 22),
+    }));
   }
 
   // 显示/隐藏 工单
