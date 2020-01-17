@@ -16,11 +16,11 @@
             </div>
             <div class="town-item-rest">
               <div class="rest-left">分管领导</div>
-              <div class="rest-right">--</div>
+              <div class="rest-right">{{subItem.phone1}}</div>
             </div>
             <div class="town-item-rest">
               <div class="rest-left">分中心常务副主任</div>
-              <div class="rest-right">--</div>
+              <div class="rest-right">{{subItem.phone2}}</div>
             </div>
           </div>
         </div>

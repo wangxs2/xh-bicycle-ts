@@ -30,10 +30,10 @@
         <div class="label">系统电压:</div>
         <div class="value">{{params.sysVoltage}}</div>
       </li>
-      <li v-if="params.type === 1">
+      <!-- <li v-if="params.type === 1">
         <div class="label">电池电流:</div>
         <div class="value">{{params.batteryCurrent}}</div>
-      </li>
+      </li> -->
       <li>
         <div class="label">电池电压:</div>
         <div class="value">{{params.batteryVoltage}}</div>

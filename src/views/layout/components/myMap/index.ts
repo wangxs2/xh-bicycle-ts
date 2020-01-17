@@ -118,10 +118,10 @@ export default class Map extends Vue {
 
   // 设置项
   private settingItemData: Array<{}> = [
-    {
-      state: false,
-      name: '热力图',
-    },
+    // {
+    //   state: false,
+    //   name: '热力图',
+    // },
     {
       state: true,
       name: '夜间模式',
@@ -308,10 +308,10 @@ export default class Map extends Vue {
       icon: `${process.env.BASE_URL}staffLegend/icon_4@3x.png`,
       name: '已处理',
     },
-    {
-      icon: `${process.env.BASE_URL}staffLegend/icon_5@3x.png`,
-      name: '超时未处理',
-    },
+    // {
+    //   icon: `${process.env.BASE_URL}staffLegend/icon_5@3x.png`,
+    //   name: '超时未处理',
+    // },
   ];
 
   // 图例统计数据

@@ -29,6 +29,17 @@ export default class Command extends Vue {
       });
     }
   }
+  // 随机8位电话
+  private getMoble() {
+    var prefix = ''
+    for (var j = 0; j < 8; j++) {
+      prefix = prefix + Math.floor(Math.random() * 10)
+      if (j == 0) {
+        prefix == '0' ? '3' : prefix
+      }
+    }
+    return prefix
+  }
 
   // 处理数据
   private disData(): void {
@@ -36,8 +47,10 @@ export default class Command extends Vue {
       (item: any): object => {
         return {
           name: item.orgName,
-          phone1: '--',
-          phone2: '--',
+          // phone1: '--',
+          // phone2: '--',
+          phone1: this.getMoble(),
+          phone2: this.getMoble(),
         };
       },
     );
