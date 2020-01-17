@@ -20,7 +20,7 @@ module.exports = {
   crossorigin: undefined, // 设置生成的 HTML 中 <link rel="stylesheet"> 和 <script> 标签的 crossorigin 属性。
   integrity: false, // 在生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)。
   devServer: {
-    port: 9090, // 端口号
+    port: 9051, // 端口号
     // host: 'localhost',
     https: false,
     open: false, //配置自动启动浏览器
@@ -34,8 +34,8 @@ module.exports = {
         // target: `http://10.1.4.73:8090${process.env.VUE_APP_API_URL}`,
         // target: `http://10.1.4.163:8090${process.env.VUE_APP_API_URL}`,
         // target: `http://10.1.4.108:8090${process.env.VUE_APP_API_URL}`,
-        target: `http://10.1.30.202:18181${process.env.VUE_APP_API_URL}`,
-        // target: 'http://106.14.198.128:18181/sharebikesclean',
+        // target: `http://10.1.30.202:18181${process.env.VUE_APP_API_URL}`,
+        target: 'http://106.14.198.128:18181/sharebikesclean',
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_API_URL]: '/'

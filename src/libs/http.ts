@@ -6,7 +6,7 @@ import { Message } from 'element-ui';
 // 创建axios实例
 const Axios = axios.create({
   baseURL: process.env.VUE_APP_API_URL + '/',
-  timeout: 20000,
+  timeout: 50000,
   withCredentials: true, // 是否允许带cookie这些
 });
 
