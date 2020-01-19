@@ -32,13 +32,15 @@ export default class Command extends Vue {
   // 随机8位电话
   private getMoble() {
     var prefix = ''
-    for (var j = 0; j < 8; j++) {
+    var numOneList = ['2', '5', '6']
+    var numOne = numOneList[Math.floor((Math.random() * numOneList.length))]
+    for (var j = 0;j < 7;j++) {
       prefix = prefix + Math.floor(Math.random() * 10)
       if (j == 0) {
         prefix == '0' ? '3' : prefix
       }
     }
-    return prefix
+    return numOne+prefix
   }
 
   // 处理数据
