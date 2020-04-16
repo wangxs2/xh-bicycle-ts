@@ -37,7 +37,6 @@ export default class WorkDetails extends Vue {
 
         // 取十条
         let data: Array<{}> = sortData.slice(0, 10);
-
         data = data.map(
           (item: any, index: number): object => {
             return {

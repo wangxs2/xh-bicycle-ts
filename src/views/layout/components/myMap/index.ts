@@ -13,7 +13,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
 import screenfull from 'screenfull';
 import moment from 'moment';
-
 import MyMap from './map';
 import API from '@/api/index.ts';
 import { arrGroup, refinedCal, eventDelegate } from '@/libs/util.ts';
@@ -492,7 +491,7 @@ export default class Map extends Vue {
     // 监听全屏事件
     fullObj.on('change', (e) => {
       if (e.target.className === 'my-map' && fullObj.isFullscreen) {
-        window.document.documentElement.setAttribute('data-theme', 'mapFull');
+        window.document.documentElement.setAttribute('data-theme', 'bigFull');
       } else {
         window.document.documentElement.setAttribute('data-theme', 'default');
       }
@@ -1263,7 +1262,6 @@ export default class Map extends Vue {
 
         this.disCityData(this.selectEnterpriseCode);
         this.disAreaData(this.selectEnterpriseCode);
-
         // 定时刷新
         this.timeoutEvent('getTownBoundary');
       },

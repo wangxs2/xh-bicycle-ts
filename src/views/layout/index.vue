@@ -128,8 +128,6 @@ import myMap from './components/myMap/index';
 import orderSituation from './components/ordersituation/index';
 import workDispose from './components/workDispose/index';
 import command from './components/command/index';
-
-
 import { Component, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
 import API from '@/api/index';
@@ -175,7 +173,6 @@ export default class Layout extends Vue {
         if (res.status === 0) {
           this.townData = cloneObj(res.activeRange);
           res.activeRange = res.activeRange.slice(0, 10);
-
           this.activeRange = res.activeRange.map(
             (item: any, index: number): object => {
               item.percentage = refinedCal(`${item.activeRate}*100`, -1) + '%';
