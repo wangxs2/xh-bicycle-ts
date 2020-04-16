@@ -8,7 +8,7 @@
       </div>
     </div>
     <div class="warning-body">
-      <div class="warning-box warning-realTime">
+      <!-- <div class="warning-box warning-realTime">
         <div class="warning-lable">实时预警</div>
         <div class="warning-content">
           <transition-group name="list-complete"
@@ -39,6 +39,42 @@
               <div class="item-lable"
                    v-state='-1'></div>
               <div class="item-des">{{item | waringInfo(-1)}}</div>
+            </div>
+          </transition-group>
+        </div>
+      </div> -->
+      
+      <div class="warning-box warning-realTime">
+        <div class="warning-lable">实时预警</div>
+        <div class="warning-content">
+          <transition-group name="list-complete"
+                            tag="div">
+            <div class="warning-item"
+                 @click="selectWarning(item,1)"
+                 @mouseleave="Animation(1),isDetails = false"
+                 :key="item.index"
+                 v-for="item in ClearEarly">
+              <div class="item-lable"
+                    v-state='item.waringType'></div>
+              <div class="item-des">{{item | waringInfo(-1)}}</div>
+            </div>
+          </transition-group>
+        </div>
+      </div>
+      <div class="warning-box warning-history">
+        <div class="warning-lable">历史预警</div>
+        <div class="warning-content">
+          <transition-group name="list-complete"
+                            tag="div">
+            <div class="warning-item"
+                 @click="selectWarning(item,0)"
+                 @mouseleave="Animation(0),isDetails = false"
+                 :key="item.index"
+                 v-for="item in EarlyWarnData">
+              <div class="item-lable"
+                 v-state='-1' >
+              </div>
+              <div class="item-des">{{item | waringInfo}}</div>
             </div>
           </transition-group>
         </div>
@@ -161,28 +197,50 @@ moment.locale('zh-cn');
     waringInfo(data: any, type?: number): string {
       let str: string = '';
       if (type === undefined) {
+        // if (data.waringType === 0) {
+        //   // 下限
+        //   str = `${data.waringTime} ${data.orgName}有车辆${
+        //     data.bicycleNum
+        //   }辆，活跃率为${data.activeRate}%，建议企业增加投放`;
+        // } else {
+        //   // 上限
+        //   str = `${data.waringTime} ${data.orgName}有车辆${
+        //     data.bicycleNum
+        //   }辆，活跃率为${data.activeRate}%，已通知企业加强巡查和清运`;
+        // }
         if (data.waringType === 0) {
           // 下限
           str = `${data.waringTime} ${data.orgName}有车辆${
             data.bicycleNum
-          }辆，活跃率为${data.activeRate}%，建议企业增加投放`;
+          }辆，活跃率为${data.activeRate}%，下限预警已解除`;
         } else {
           // 上限
           str = `${data.waringTime} ${data.orgName}有车辆${
             data.bicycleNum
-          }辆，活跃率为${data.activeRate}%，已通知企业加强巡查和清运`;
+          }辆，活跃率为${data.activeRate}%，上限预警已解除`;
         }
       } else {
+        // if (data.waringType === 0) {
+        //   // 下限
+        //   str = `${data.clearWaringTime} ${data.orgName}有车辆${
+        //     data.clearWaringBicycleNum
+        //   }辆，活跃率为${data.clearWaringActiveRate}%，下限预警已解除`;
+        // } else {
+        //   // 上限
+        //   str = `${data.clearWaringTime} ${data.orgName}有车辆${
+        //     data.clearWaringBicycleNum
+        //   }辆，活跃率为${data.clearWaringActiveRate}%，上限预警已解除`;
+        // }
         if (data.waringType === 0) {
           // 下限
           str = `${data.clearWaringTime} ${data.orgName}有车辆${
             data.clearWaringBicycleNum
-          }辆，活跃率为${data.clearWaringActiveRate}%，下限预警已解除`;
+          }辆，活跃率为${data.clearWaringActiveRate}%，建议企业增加投放`;
         } else {
           // 上限
           str = `${data.clearWaringTime} ${data.orgName}有车辆${
             data.clearWaringBicycleNum
-          }辆，活跃率为${data.clearWaringActiveRate}%，上限预警已解除`;
+          }辆，活跃率为${data.clearWaringActiveRate}%，已通知企业加强巡查和清运`;
         }
       }
       return str;
@@ -273,12 +331,14 @@ export default class EarlyWarning extends Vue {
         details2 = `低于泊位阀值${data.parkNum}辆，并活跃率高于${
           data.activeRateThreshold
         }%`;
-        details3 = '建议企业增加投放';
+        // details3 = '建议企业增加投放';
+        details3 = '下限预警已解除';
       } else {
         details2 = `高于泊位阀值${data.parkNum}辆，并活跃率低于${
           data.activeRateThreshold
         }%`;
-        details3 = '已通知企业加强巡查和清运';
+        // details3 = '已通知企业加强巡查和清运';
+        details3 = '上限预警已解除';
       }
     } else {
       const saturability: number = refinedCal(
@@ -297,7 +357,8 @@ export default class EarlyWarning extends Vue {
           details2 = `高于下限预警泊位阀值60%`;
           // details2 = `高于下限预警泊位阀值${saturability}%`;
         }
-        details3 = '下限预警已解除';
+        // details3 = '下限预警已解除';
+        details3 = '建议企业增加投放';
       } else {
         if (saturability >= 100 && data.clearWaringActiveRate > 45) {
           details2 = `高于上限预警泊位阀值100%，并活跃率高于${
@@ -310,7 +371,8 @@ export default class EarlyWarning extends Vue {
           details2 = `高于上限预警泊位阀值60%，并低于上限预警泊位阀值100%`;
           // details2 = `高于上限预警泊位阀值${saturability}%，并低于上限预警泊位阀值100%`;
         }
-        details3 = '上限预警已解除';
+        // details3 = '上限预警已解除';
+        details3 = '已通知企业加强巡查和清运';
       }
     }
 
