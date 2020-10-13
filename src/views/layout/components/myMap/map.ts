@@ -28,17 +28,36 @@ class MyMap {
   public workOrderGroup: any = new AMap.OverlayGroup(); // 工单集合
 
   public workEvent: any[] = []; // 工单集合的事件
-
+  public pointEvent4: any = null; // 点聚合的点击事件
   public stationGroup: any = new AMap.OverlayGroup(); // 嗅探集合
   public rippleGroup: any = new AMap.OverlayGroup(); // 水波效果集合
   public stationFunc: any = null; // 嗅探功能点
   public stationEvent: any[] = []; // 蓝牙点事件
-
+  public iconList: any = {
+      1006: [
+        require('@/assets/mobike.svg'),
+        require('@/assets/mobike-unlock.svg')
+      ],
+      1007: [require('@/assets/ofo.svg'), require('@/assets/ofo-unlock.svg')],
+      1014: [
+        require('@/assets/default.svg'),
+        require('@/assets/default-unlock.svg')
+      ],
+      1015: [
+        require('@/assets/default.svg'),
+        require('@/assets/default-unlock.svg')
+      ],
+      1059: [
+        require('@/assets/default.svg'),
+        require('@/assets/default-unlock.svg')
+      ]
+  };
+  public cluster: any = null; // //点聚合
+  public infoWindow1: any =null; // 信息窗口实例
+  public markers: any[] = []; // 点聚合
   public ripples: any = {}; // 水波纹效果实例
-
   public staffGroup: any = new AMap.OverlayGroup(); // 人员位置集合
   public staffEvent: any[] = []; // 人员位置事件集合
-
   public forbidGroup: any = new AMap.OverlayGroup(); // 禁停区集合
   public forbidEvent: any[] = []; // 禁停区事件集合
 
@@ -50,6 +69,7 @@ class MyMap {
 
     this.mapEvent();
     this.creactStationFunc();
+    this.initInfoWindow1()
   }
 
   // 创建禁停区
@@ -71,7 +91,7 @@ class MyMap {
   public upDataForbid(data: any): void {
     const target = this.forbidGroup.getOverlays().find(
       (item: any): boolean => {
-        return item.he.extData.regionName === data.regionName;
+        return item.getExtData().regionName === data.regionName;
       },
     );
 
@@ -121,11 +141,83 @@ class MyMap {
     return marker;
   }
 
+
+  //清除点聚合
+  public clearMarkers() {
+    if (this.cluster) {
+      this.cluster.clearMarkers()
+    }
+  }
+
+  //单车点聚合
+  public pointPolymerization(points) {
+    if (this.cluster) {
+      this.cluster.clearMarkers()
+    }
+
+    this.markers = []
+    points.forEach((iteam, index) => {
+      this.markers.push(
+        new AMap.Marker({
+          position: [iteam.lng, iteam.lat],
+          icon: new AMap.Icon({
+            size: new AMap.Size(22, 22),
+            image: this.iconList[iteam.bikeId][iteam.lockStatus],
+            imageSize: new AMap.Size(22, 22)
+          }), // 添加 Icon 图标 URL
+          offset: new AMap.Pixel(-25, -25),
+          extData: { row: iteam }
+        })
+      )
+    })
+
+    let sts = [
+      {
+        url: require('@/assets/common.png'),
+        size: new AMap.Size(48, 48),
+        offset: new AMap.Pixel(-24, -24)
+      },
+      {
+        url: require('@/assets/common.png'),
+        size: new AMap.Size(48, 48),
+        offset: new AMap.Pixel(-24, -24)
+      }
+    ]
+    this.cluster = new AMap.MarkerClusterer(this.map, this.markers, {
+      styles: sts,
+      gridSize: 80,
+      minClusterSize: 20
+    })
+  }
+
+
+  //点聚合的点击事件
+  public pointGroupEvent4(callback: any): void {
+    AMap.event.removeListener(this.pointEvent4)
+    this.markers.forEach((iteam, index) => {
+      this.pointEvent4 = AMap.event.addListener(iteam, 'click', callback)
+    })
+  }
+
+
+   // 初始化信息窗口
+   public initInfoWindow1() {
+    this.infoWindow1 = new AMap.InfoWindow({
+      isCustom: false,
+      autoMove: true,
+      offset: new AMap.Pixel(-12, -13)
+    })
+  }
+  // 打开信息窗口
+  public createInfoWindow1(content, lng, lat) {
+    this.infoWindow1.setContent(content)
+    this.infoWindow1.open(this.map, new AMap.LngLat(lng, lat))
+  }
   // 修改人员位置点
   public upDataStaffPoint(data: any): void {
     const target = this.staffGroup.getOverlays().find(
       (item: any): boolean => {
-        return item.he.extData.id === data.userId;
+        return item.getExtData().id === data.userId;
       },
     );
 
@@ -136,7 +228,7 @@ class MyMap {
   public screenStaffPoint(code: string): void {
     this.staffGroup.getOverlays().forEach(
       (item: any): void => {
-        if (item.he.extData.code.includes(code)) {
+        if (item.getExtData().code.includes(code)) {
           item.show();
         } else {
           item.hide();
@@ -222,7 +314,7 @@ class MyMap {
   public updatedStationPoint(data: any): void {
     const target = this.stationGroup.getOverlays().find(
       (item: any): boolean => {
-        return item.he.extData.code === data.terminalId;
+        return item.getExtData().code === data.terminalId;
       },
     );
 
@@ -259,7 +351,7 @@ class MyMap {
       offset: new AMap.Pixel(-27, -27),
       content: this.setStationFuncContent(),
     });
-    this.stationFunc.hide();
+    // this.stationFunc.hide();
     this.map.add(this.stationFunc);
   }
 
@@ -435,13 +527,13 @@ class MyMap {
     );
     this.CpointEvent.push(
       AMap.event.addListener(this.cityPointGroup, 'mousemove', (e: any) => {
-        const tagNode = e.target.he.contentDom.children[0];
+        const tagNode = e.target.Ce.contentDom.children[0];
         tagNode.style.backgroundColor = this.getColor(1000);
       }),
     );
     this.CpointEvent.push(
       AMap.event.addListener(this.cityPointGroup, 'mouseout', (e: any) => {
-        const tagNode = e.target.he.contentDom.children[0];
+        const tagNode = e.target.Ce.contentDom.children[0];
         tagNode.style.backgroundColor = this.getColor(-1);
       }),
     );
@@ -545,13 +637,13 @@ class MyMap {
       AMap.event.addListener(this.areaPointGroup, 'mousemove', (e: any) => {
         const name: string = e.target.getExtData().name;
         if (nameFlag !== name) {
-          const tagNode = e.target.he.contentDom.children[0];
+          const tagNode = e.target.Ce.contentDom.children[0];
           // 显示边界
           this.areaBorderGroup
             .getOverlays()
             .find(
               (item: any): boolean => {
-                return item.he.extData.name === name;
+                return item.getExtData().name === name;
               },
             )
             .show();
@@ -566,13 +658,13 @@ class MyMap {
         const params: any = e.target.getExtData();
         const name: string = params.name;
         const state: number = params.state;
-        const tagNode = e.target.he.contentDom.children[0];
+        const tagNode = e.target.Ce.contentDom.children[0];
         // 隐藏边界
         this.areaBorderGroup
           .getOverlays()
           .find(
             (item: any): boolean => {
-              return item.he.extData.name === name;
+              return item.getExtData().name === name;
             },
           )
           .hide();
@@ -581,12 +673,11 @@ class MyMap {
       }),
     );
   }
-
   // 修改区级点
   public upDateAreaPoint(name: string, markData: any): void {
     const Evnet = this.areaPointGroup.getOverlays().find(
       (item: any): boolean => {
-        return item.he.extData.name === name;
+        return item.getExtData().name === name;
       },
     );
 
@@ -597,7 +688,6 @@ class MyMap {
       state: markData.state,
     });
   }
-
   // 初始化热力图
   public initHeatMap(): void {
     this.map.plugin(
@@ -618,17 +708,14 @@ class MyMap {
     );
     this.isHeatMap(false);
   }
-
   // 显示/隐藏 热力图
   public isHeatMap(flag: boolean): void {
     flag ? this.heatmap.show() : this.heatmap.hide();
   }
-
   // 设置热力图展现的数据集
   public setHeatMapData(points: any, max: number = 80): void {
     this.heatmap.setDataSet({ data: points, max });
   }
-
   // 绘制 遮罩 行政边界
   public initShade(path: Array<string | number>): void {
     // 全图大遮罩
@@ -640,7 +727,6 @@ class MyMap {
         new AMap.LngLat(360, 90, true),
       ],
     ];
-
     // 抠图
     pathArray.push.apply(pathArray, [path]);
 

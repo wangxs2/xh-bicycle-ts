@@ -160,6 +160,12 @@ export default {
       params,
     });
   },
+  // 获取单车的信息
+  getBleAllCar(params: any): Promise<{}> {
+    return http('countJieZhen/getBikeStatus' + getKey(), {
+      params,
+    });
+  },
 
   /**
    * 获取当前时间 蓝牙检测车辆数（按单车企业）统计

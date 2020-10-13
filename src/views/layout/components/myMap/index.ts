@@ -117,10 +117,10 @@ export default class Map extends Vue {
 
   // 设置项
   private settingItemData: Array<{}> = [
-    // {
-    //   state: false,
-    //   name: '热力图',
-    // },
+    {
+      state: false,
+      name: '热力图',
+    },
     {
       state: true,
       name: '夜间模式',
@@ -128,6 +128,10 @@ export default class Map extends Vue {
     {
       state: true,
       name: '街镇信息',
+    },
+    {
+      state: true,
+      name: '单车信息',
     },
     {
       state: true,
@@ -436,8 +440,14 @@ export default class Map extends Vue {
   // 显示的蓝牙点位数据
   private BleStationData: any = null;
 
-  // 是否显示蓝牙检测的车辆统计
+  private northeastLng : any= null;
+  private northeastLat : any= null;
+  private southwestLng : any= null;
+  private southwestLat : any= null;
+  private numberMap : any= null;
   private isBleStatistics: boolean = false;
+  // 是否显示蓝牙检测的车辆统计
+  private bikeStatus: boolean = false;
 
   // 是否显示蓝牙检测的车辆列表
   private isBleBickList: boolean = false;
@@ -473,10 +483,12 @@ export default class Map extends Vue {
   private ForbidName: string = '';
 
   public created() {
-    this.getBicyActiveCurve();
+    // this.getBicyActiveCurve();
+    // this.$router.go(0)
   }
 
   public mounted() {
+    
     myMap = new MyMap({ el: 'mapContainer' });
     this.getTownBoundary();
     this.getForbid();
@@ -487,7 +499,6 @@ export default class Map extends Vue {
 
     this.stationFuncEvent();
     window.document.documentElement.setAttribute('data-theme', 'default');
-
     // 监听全屏事件
     fullObj.on('change', (e) => {
       if (e.target.className === 'my-map' && fullObj.isFullscreen) {
@@ -497,6 +508,26 @@ export default class Map extends Vue {
       }
 
       this.$Bus.$emit('updateScreen');
+    });
+
+    myMap.map.on("moveend", () => {
+      let bounds = myMap.map.getBounds();
+      let northeast = bounds.northeast.toString().split(",");
+      let southwest = bounds.southwest.toString().split(",");
+      this.northeastLng = northeast[0];
+      this.northeastLat = northeast[1];
+      this.southwestLng = southwest[0];
+      this.southwestLat = southwest[1];
+      this.numberMap = myMap.map.getZoom();
+      if (this.numberMap > 17 && this.bikeStatus == true) {
+        this.getAllBikes(
+          this.northeastLng,
+          this.northeastLat,
+          this.southwestLng,
+          this.southwestLat
+        );
+      }
+      
     });
   }
 
@@ -761,6 +792,19 @@ export default class Map extends Vue {
       case '街镇信息':
         myMap.isPointInfo = data.state;
         myMap.pointGroupControl();
+        break;
+      case "单车信息":
+        this.bikeStatus = data.state;
+        if (data.state) {
+          this.getAllBikes(
+            this.northeastLng,
+            this.northeastLat,
+            this.southwestLng,
+            this.southwestLat
+          );
+        } else {
+          myMap.clearMarkers();
+        }
         break;
       case '禁停区域':
         this.ForbidName = '';
@@ -1326,9 +1370,9 @@ export default class Map extends Vue {
       myMap.upDateCityPoint(CityData);
     } else {
       this.cityPointData = CityData;
-      myMap
-        .addOverlayGroup('cityPointGroup', myMap.createCityPoint(CityData))
-        .hide();
+      // myMap
+      //   .addOverlayGroup('cityPointGroup', myMap.createCityPoint(CityData))
+      //   .hide();
     }
     myMap.CityPointEvent();
   }
@@ -1353,13 +1397,40 @@ export default class Map extends Vue {
         myMap.upDateAreaPoint(item.name, item);
       } else {
         this.areaPointData[item.name] = item;
-        myMap
-          .addOverlayGroup('areaPointGroup', myMap.createAreaPoint(item))
-          .hide();
+        // myMap
+        //   .addOverlayGroup('areaPointGroup', myMap.createAreaPoint(item))
+        //   .hide();
       }
     });
 
     myMap.AreaPointEvent(this.openFifteenWin);
+  }
+
+  //获取所有的单车数量
+  private getAllBikes (northeastLng, northeastLat, southwestLng, southwestLat) {
+    API.getBleAllCar({
+      northeastLng: northeastLng,
+      northeastLat: northeastLat,
+      southwestLng: southwestLng,
+      southwestLat: southwestLat
+    }).then((res: any): void => {
+      if (res) {
+        myMap.pointPolymerization(res.bicycleData);
+        myMap.pointGroupEvent4(e => {
+          let str = e.target.getExtData().row;
+          let content = `
+            <p style="margin:0">车辆编号：${str.bicycleId} </p>
+            <p style="margin:0">所属企业：${str.bikeName} </p>
+            <p style="margin:0">状态：${
+            str.lockStatus == "1" ? "开锁" : "关锁"
+            }</p>
+            <p style="margin:0">定位时间：${str.uploadTime} </p>
+            <p style="margin:0">当前位置：${str.lng},${str.lat} </p>
+            `;
+          myMap.createInfoWindow1(content, str.lng, str.lat);
+        });
+      }
+    });
   }
 
   // 打开街镇 十五天趋势弹窗
@@ -1383,7 +1454,7 @@ export default class Map extends Vue {
       },
     );
 
-    myMap.addOverlayGroup('areaBorderGroup', overlays).hide();
+    // myMap.addOverlayGroup('areaBorderGroup', overlays).hide();
   }
 
   // 格式边界数据
