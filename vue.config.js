@@ -15,7 +15,8 @@ module.exports = {
   runtimeCompiler: false, //是否使用包含运行时编译器的 Vue 构建版本
   lintOnSave: false, // eslint-loader 是否在保存的时候检查
   productionSourceMap: false, //生产环境是否生成 sourceMap 文件
-  publicPath: process.env.VUE_APP_PAGE_URL, // 部署项目路径
+  // publicPath: process.env.VUE_APP_PAGE_URL, // 部署项目路径
+  publicPath: "./", // 部署项目路径
   transpileDependencies: [], // 默认情况下 babel-loader 会忽略所有 node_modules 中的文件。如果你想要通过 Babel 显式转译一个依赖，可以在这个选项中列出来。
   crossorigin: undefined, // 设置生成的 HTML 中 <link rel="stylesheet"> 和 <script> 标签的 crossorigin 属性。
   integrity: false, // 在生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)。

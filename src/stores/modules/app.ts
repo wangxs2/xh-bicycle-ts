@@ -2,7 +2,7 @@ import API from '@/api/index';
 
 const app = {
   state: {
-    key: '',
+    key: 'UouLaDG9Dt931%7CVrNZp2nQ%3D%3D',
     PageConfig: null, // 配置
   },
   mutations: {

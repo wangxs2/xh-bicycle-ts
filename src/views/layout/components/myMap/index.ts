@@ -447,7 +447,7 @@ export default class Map extends Vue {
   private numberMap : any= null;
   private isBleStatistics: boolean = false;
   // 是否显示蓝牙检测的车辆统计
-  private bikeStatus: boolean = false;
+  private bikeStatus: boolean = true;
 
   // 是否显示蓝牙检测的车辆列表
   private isBleBickList: boolean = false;
@@ -519,7 +519,8 @@ export default class Map extends Vue {
       this.southwestLng = southwest[0];
       this.southwestLat = southwest[1];
       this.numberMap = myMap.map.getZoom();
-      if (this.numberMap > 17 && this.bikeStatus == true) {
+      console.log(this.numberMap)
+      if (this.numberMap > 15 && this.bikeStatus == true) {
         this.getAllBikes(
           this.northeastLng,
           this.northeastLat,
@@ -674,7 +675,6 @@ export default class Map extends Vue {
             // }
           },
         );
-
         myMap.staffGroupEvent((id: string) => {
           this.StaffData = this.userPositionMsg[id];
           this.isStaffData = true;
@@ -684,7 +684,6 @@ export default class Map extends Vue {
       },
     );
   }
-
   // 获取区域15天的活跃曲线数据
   private getBicyActiveCurve(): void {
     API.getBicyActiveCurve(this.selectEnterpriseCode === 'all' ? '' : this.selectEnterpriseCode).then(
@@ -697,7 +696,6 @@ export default class Map extends Vue {
       },
     );
   }
-
   // 获取蓝牙设备数据
   private getBleContainStatus(): void {
     API.getBleContainStatus().then(
@@ -716,7 +714,6 @@ export default class Map extends Vue {
               this.bleContainStatus[item.terminalId] = item;
             },
           );
-
           myMap.stationGroupEvent((code: string) => {
             const data: any = this.bleContainStatus[code];
             myMap.closeStationFunc();
@@ -734,7 +731,6 @@ export default class Map extends Vue {
       },
     );
   }
-
   /**
    * 蓝牙嗅探事件绑定
    */
@@ -775,7 +771,6 @@ export default class Map extends Vue {
       }
     });
   }
-
   /**
    * 选择设置项
    */

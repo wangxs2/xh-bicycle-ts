@@ -65,7 +65,7 @@ class MyMap {
     this.el = data.el;
 
     this.initMap();
-    this.initHeatMap();
+   
 
     this.mapEvent();
     this.creactStationFunc();
@@ -781,6 +781,10 @@ class MyMap {
       this.staffGroup,
       this.forbidGroup,
     ]);
+    setTimeout(()=>{
+      this.initHeatMap();
+    },200)
+    
   }
 }
 

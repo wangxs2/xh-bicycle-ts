@@ -11,33 +11,47 @@ NProgress.configure({
 router.beforeEach((to, from, next) => {
   // 进度条开始
   NProgress.start();
-
-  if (to.path === '/login') {
-    sessionStorage.clear();
-    store.commit('SETKEY', '');
-    store.commit('SETCONFIG', null);
+  // next();
+  // console.log(next)
+  // NProgress.done();
+  sessionStorage.setItem('KEY', store.getters.key);
+  const key = sessionStorage.getItem('KEY');
+  API.getConfig(key).then((res: any) => {
+    store.commit('SETKEY', key);
+    store.commit('SETCONFIG', res.info);
+    // next("/layout");
     next();
-  } else {
-    // 有配置直接去对应的页面
-    if (store.getters.pageConfig) {
-      next();
-    } else {
-      const key = sessionStorage.getItem('KEY');
-      if (key) {
-        // 拉取新的配置
-        API.getConfig(key).then((res: any) => {
-          store.commit('SETKEY', key);
-          store.commit('SETCONFIG', res.info);
-          next();
-        }).catch(() => {
-          NProgress.done();
-        });
-      } else {
-        NProgress.done();
-        next('/login');
-      }
-    }
-  }
+    // router.push('/layout');
+  }).catch(() => {
+    NProgress.done();
+  });
+
+  // if (to.path === '/login') {
+  //   sessionStorage.clear();
+  //   store.commit('SETKEY', '');
+  //   store.commit('SETCONFIG', null);
+  //   next();
+  // } else {
+  //   // 有配置直接去对应的页面
+  //   if (store.getters.pageConfig) {
+  //     next();
+  //   } else {
+  //     const key = sessionStorage.getItem('KEY');
+  //     if (key) {
+  //       // 拉取新的配置
+  //       API.getConfig(key).then((res: any) => {
+  //         store.commit('SETKEY', key);
+  //         store.commit('SETCONFIG', res.info);
+  //         next();
+  //       }).catch(() => {
+  //         NProgress.done();
+  //       });
+  //     } else {
+  //       NProgress.done();
+  //       next('/login');
+  //     }
+  //   }
+  // }
 });
 
 router.afterEach((to, from) => {
