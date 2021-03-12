@@ -5,7 +5,7 @@ import Login from './views/login/index';
 Vue.use(Router);
 
 export default new Router({
-  mode: 'history',
+  // mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
@@ -14,7 +14,7 @@ export default new Router({
       component: Login,
     },
     {
-      path: '/layout',
+      path: '/',
       name: 'layout',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route

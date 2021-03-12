@@ -1,6 +1,6 @@
 import http from '@/libs/http';
 import store from '@/stores/index';
-let myurl='http://106.14.198.128:18181/sharebikesclean/'
+let myurl='http://101.132.45.201:18181/sharebikesclean/'
 const getKey = () => {
   return store.getters.key;
   // return sessionStorage.getItem('KEY');

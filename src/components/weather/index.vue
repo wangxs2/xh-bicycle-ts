@@ -40,8 +40,8 @@ export default class Weather extends Vue {
         const desc = thisWeather[timeType].type;
         this.weatherData = {
           aqi,
-          // img: require(`@img/weather/${desc}.png`),
-          img: `${process.env.BASE_URL}weather/${desc}.png`,
+          img: require(`@img/weather/${desc}.png`),
+          // img: `${process.env.BASE_URL}weather/${desc}.png`,
           low_temp: thisWeather.low_temp.slice(0, -1),
           high_temp: thisWeather.high_temp.slice(0, -1),
           desc,

@@ -14,17 +14,25 @@ router.beforeEach((to, from, next) => {
   // next();
   // console.log(next)
   // NProgress.done();
-  sessionStorage.setItem('KEY', store.getters.key);
-  const key = sessionStorage.getItem('KEY');
-  API.getConfig(key).then((res: any) => {
-    store.commit('SETKEY', key);
-    store.commit('SETCONFIG', res.info);
-    // next("/layout");
-    next();
-    // router.push('/layout');
-  }).catch(() => {
-    NProgress.done();
-  });
+    if (store.getters.pageConfig) {
+      next();
+    }else{
+    sessionStorage.setItem('KEY', store.getters.key);
+    const key = sessionStorage.getItem('KEY');
+    API.getConfig(key).then((res: any) => {
+      store.commit('SETKEY', key);
+      store.commit('SETCONFIG', res.info);
+      // next("/");
+    //   next({
+    //     ...to,
+    //     replace: true
+    // })
+      next();
+      // router.push('/layout');
+    }).catch(() => {
+      NProgress.done();
+    });
+  }
 
   // if (to.path === '/login') {
   //   sessionStorage.clear();
